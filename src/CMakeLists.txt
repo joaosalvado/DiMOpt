@@ -4,12 +4,9 @@ add_executable(scp_coupled scp_coupled.cpp)
 list(APPEND L_EXE scp_coupled)
 add_executable(distributed_scp distributed_scp.cpp)
 list(APPEND L_EXE distributed_scp)
-add_executable(plot_experiments plot_experiments.cpp)
-list(APPEND L_EXE plot_experiments)
 
 
 FOREACH(EXE_NAME IN LISTS L_EXE)
-
     target_link_libraries(${EXE_NAME}  mropt_lib)
 
     target_include_directories(${EXE_NAME} PUBLIC ${PROJECT_INCLUDE_DIR})
@@ -27,9 +24,6 @@ FOREACH(EXE_NAME IN LISTS L_EXE)
     endif()
 
     install (TARGETS ${EXE_NAME} RUNTIME DESTINATION ${EXECUTABLE_OUTPUT_PATH})
-
-
-
 ENDFOREACH()
 
 

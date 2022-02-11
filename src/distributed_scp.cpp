@@ -48,14 +48,14 @@ int main(int argc, char** argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &r);
 
-
+    // 0 - Read Mission
     // std::string map_file = "0.5pol.png";
-    // std::string maps_path = "../maps/"; // /home/ohmy/js_ws/github_joao/mrrm
+    std::string maps_path = "../maps/"; // /home/ohmy/js_ws/github_joao/mrrm
     std::string record_file = "../records/distributed.txt"; // /home/ohmy/js_ws/github_joao/mrrm
     // 0 - Get Mission data from file
     std::string mission_filename {argv[1]};
-    std::string maps_path {argv[2]};
-    std::string map_file {argv[3]};
+    //std::string maps_path {argv[2]};
+    std::string map_file {argv[2]};
     std::ifstream mission_filestream(mission_filename);
     json mission_json;
     mission_filestream >> mission_json;
@@ -104,7 +104,6 @@ int main(int argc, char** argv) {
     // 2 - Initialize Free Space
     init_cfree(polygons);
 
-
     // 3 - Add Missions to robots
     // 3.1 - Get assignments in correct form
     std::vector<mropt::freespace::FreeSpace::PolygonAssignment> pas_robot;
@@ -127,12 +126,12 @@ int main(int argc, char** argv) {
     mrprob_d.setParams(R, N);
     mrprob_d.addRobot(robot_d);
     mrprob_d.set_plotter(plotter);
-    // mrprob_d.debug_mode().allow_plotting();
+    mrprob_d.debug_mode().allow_plotting();
     // 4.2 - Solve
-    //  mrprob_d.solve();
     try {
         mrprob_d.solve();
-        //mrprob_d.plot_trajectories({robot_d->get_ode(), robot_d->get_ode(), robot_d->get_ode()});
+        mrprob_d.plot_trajectories(std::vector<std::shared_ptr<mropt::Dynamics::ode>>(R, robot_d->get_ode()) );
+        MPI_Barrier(MPI_COMM_WORLD);
     } catch(...){
         mropt::util::Recorder recorder;
         mropt::util::Recorder::Record record;
@@ -179,8 +178,9 @@ int main(int argc, char** argv) {
 
     // Finalization
     MPI_Finalize();
-
 }
+
+
 
 
 void init_cfree(std::vector<std::vector<std::vector<double>>> polygons){

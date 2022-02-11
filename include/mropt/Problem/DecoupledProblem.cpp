@@ -69,56 +69,16 @@ void DecoupledProblem::setup() {
     // 2 - Synchronize
     robot->data_shared->sync(robot);
 
-    /* if (robot->robot_id == 0) {
-         robot->scp_d_nocol();
-     }
-     std::cout << "\n\n\n" << std::endl;
-     MPI_Barrier(MPI_COMM_WORLD);
-     if (robot->robot_id == 1) {
-         robot->scp_d_nocol();
-     }
-     std::cout << "\n\n\n" << std::endl;
-     MPI_Barrier(MPI_COMM_WORLD);
-     if (robot->robot_id == 2) {
-         robot->scp_d_nocol();
-     }
-     std::cout << "\n\n\n" << std::endl;
-     MPI_Barrier(MPI_COMM_WORLD);
-     if (robot->robot_id == 3) {
-         robot->scp_d_nocol();
-     }*/
-/*    std::cout << "\n\n\n" << std::endl;
-    MPI_Barrier(MPI_COMM_WORLD);
-    if (robot->robot_id == 4) {
-        robot->scp_d_nocol();
-    }
-    std::cout << "\n\n\n" << std::endl;
-    MPI_Barrier(MPI_COMM_WORLD);
-    if (robot->robot_id == 5) {
-        robot->scp_d_nocol();
-    }*/
 
     if (plot_) {
         //robot->data_shared->plot(robot, solve_time_r);
         //show_stats();
-        plot_trajectories(
-               std::vector<std::shared_ptr<Dynamics::ode>>(R, robot->get_ode()));//, robot->get_ode( )});
+//        plot_trajectories(
+//               std::vector<std::shared_ptr<Dynamics::ode>>(R, robot->get_ode()));//, robot->get_ode( )});
     }
 
     //Share trajectories between robots
     robot->data_shared->init_sync(robot);
-
-
-//  std::cout << "c " << std::endl;
-//  std::cout << robot->J_model << std::endl;
-//  std::cout << "R" << robot->robot_id << std::endl;
-//  MPI_Barrier(MPI_COMM_WORLD);
-//  robot->data_shared->printZ();
-//  MPI_Barrier(MPI_COMM_WORLD);
-//  robot->data_shared->printX();
-//  std::cout << robot->X_curr <<std::endl;
-//  MPI_Barrier(MPI_COMM_WORLD);
-//  std::cout << "~R" << robot->robot_id << std::endl;
 
     robot->collisions_d->setup(R, N, robot);
 
@@ -266,34 +226,6 @@ void DecoupledProblem::test() {
         std::cout << "\n\n\n" << std::endl;
         //TODO: solve for robot 0 and then for robot 1  (only for debug)
         robot->scp_d();
-/*        if(robot->robot_id == 0) {
-            robot->scp_d();
-        }
-        std::cout << "\n\n\n" << std::endl;
-        MPI_Barrier(MPI_COMM_WORLD);
-        if(robot->robot_id == 1) {
-            robot->scp_d();
-        }*/
-/*        if(robot->robot_id == 0) {
-            robot->scp_d();
-        }
-        std::cout << "\n\n\n" << std::endl;
-        MPI_Barrier(MPI_COMM_WORLD);
-        if(robot->robot_id == 1) {
-            robot->scp_d();
-        }
-        std::cout << "\n\n\n" << std::endl;
-        MPI_Barrier(MPI_COMM_WORLD);
-        if(robot->robot_id == 2) {
-            robot->scp_d();
-        }
-        std::cout << "\n\n\n" << std::endl;
-        MPI_Barrier(MPI_COMM_WORLD);
-        if(robot->robot_id == 3) {
-            robot->scp_d();
-        }
-        std::cout << "\n\n\n" << std::endl;*/
-        //robot->scp_d();
 
         solve_time_r += MPI_Wtime();
         MPI_Barrier(MPI_COMM_WORLD); //sync point
@@ -334,8 +266,8 @@ void DecoupledProblem::test() {
             if (plot_) {
                 //robot->data_shared->plot(robot, solve_time_r);
                 //show_stats();
-                plot_trajectories(
-                        std::vector<std::shared_ptr<Dynamics::ode>>(R, robot->get_ode()));//, robot->get_ode( )});
+//                plot_trajectories(
+//                        std::vector<std::shared_ptr<Dynamics::ode>>(R, robot->get_ode()));//, robot->get_ode( )});
             }
         }
 
@@ -370,12 +302,12 @@ void DecoupledProblem::test() {
     }
     if (plot_) {
         /*auto solve_time = MPI_Wtime();*/
-        robot->data_shared->plot(robot, last_solve_time_r);
-        show_stats();
-        //plot_trajectories({robot->get_ode(), robot->get_ode(), robot->get_ode()});// robot->get_ode()});
+        //robot->data_shared->plot(robot, last_solve_time_r);
+        //show_stats();
+        //plot_trajectories(std::vector<std::shared_ptr<mropt::Dynamics::ode>>(R, robot->get_ode()) );
     }
 
-    // Recording data
+        // Recording data
     if(robot->robot_id == 0) {
         record_curr.R = R;
         record_curr.t_1 = query_time_1;
