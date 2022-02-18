@@ -48,10 +48,10 @@ int main(int argc, char** argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &r);
 
-    // 0 - Read Mission
+    // -1 - Read Mission
     // std::string map_file = "0.5pol.png";
-    std::string maps_path = "../maps/"; // /home/ohmy/js_ws/github_joao/mrrm
-    std::string record_file = "../records/distributed.txt"; // /home/ohmy/js_ws/github_joao/mrrm
+    std::string maps_path = "../maps/";
+    std::string record_file = "../records/distributed.txt";
     // 0 - Get Mission data from file
     std::string mission_filename {argv[1]};
     //std::string maps_path {argv[2]};

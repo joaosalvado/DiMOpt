@@ -20,6 +20,7 @@ set(LIBRARY_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/lib")
 set(PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include/")
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR})
+set(Python3_EXECUTABLE "/usr/bin/python3")
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
