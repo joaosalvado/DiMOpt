@@ -75,7 +75,7 @@ int main(int argc, char** argv) {
     auto plotter = std::make_shared<mropt::util::Opencv_plotter>(R); // dummy
     plotter->setFootprint({L}, {W});
     plotter->addPathToScenarios(maps_path);
-    plotter->inputScenario(map_file); 
+    plotter->inputScenario(map_file);
 
     mropt::Problem::DecoupledProblem mrprob_d{r};
     mrprob_d.setParams(R, N);
