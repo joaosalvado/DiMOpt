@@ -39,5 +39,6 @@ find_package(Matplot++ REQUIRED)
 
 add_subdirectory(include/)
 add_subdirectory(src/)
+add_subdirectory(tests/)
 
 #include_directories(${CMAKE_PROJECT_DIRECTORY}/include/)

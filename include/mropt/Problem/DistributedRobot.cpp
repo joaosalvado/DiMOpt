@@ -5,6 +5,7 @@
 #include "DistributedRobot.h"
 
 using namespace mropt::Problem;
+
 DistributedRobot::DistributedRobot(
         int robot_id_,
         const Robot::Params &P,

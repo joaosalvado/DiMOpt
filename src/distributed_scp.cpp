@@ -4,7 +4,6 @@
 
 #include <casadi/casadi.hpp>
 #include <cmath>
-#include <matplotlibcpp.h>
 #include <string>
 
 #include "mropt/StateSpace/SE2/SE2.hpp"
@@ -21,11 +20,8 @@
 #include "mropt/Problem/CoupledProblem.hpp"
 #include "mropt/Problem/DecoupledProblem.hpp"
 #include "mropt/RobotShape/CircleRobot.h"
-
 #include "mropt/util/Opencv_plotter.hpp"
-
 #include "mropt/Collisions/Approx/FirstOrderTaylorDecoupledCollisions.h"
-
 #include "mropt/Collisions/Approx/FirstOrderTaylorDistributedCollisions.h"
 #include "mropt/Problem/DistributedRobot.h"
 
@@ -49,12 +45,10 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &r);
 
     // -1 - Read Mission
-    // std::string map_file = "0.5pol.png";
     std::string maps_path = "../maps/";
     std::string record_file = "../records/distributed.txt";
     // 0 - Get Mission data from file
     std::string mission_filename {argv[1]};
-    //std::string maps_path {argv[2]};
     std::string map_file {argv[2]};
     std::ifstream mission_filestream(mission_filename);
     json mission_json;

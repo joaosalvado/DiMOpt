@@ -47,11 +47,12 @@ int main(int argc, char** argv) {
         std::cerr << "Coupled case must only have one mpi thread!" << std::endl;
     }
 
-    // Record File
-    std::string record_file = "/home/ohmy/js_ws/github_repos/mrrm/records/coupled.txt";
-
-    // Get Mission data from file
+    // -1 - Read Mission
+    std::string maps_path = "../maps/";
+    std::string record_file = "../records/distributed.txt";
+    // 0 - Get Mission data from file
     std::string mission_filename {argv[1]};
+    std::string map_file {argv[2]};
     std::ifstream mission_filestream(mission_filename);
     json mission_json;
     mission_filestream >> mission_json;
