@@ -10,9 +10,7 @@ Robot::Robot(const Robot::Params &P,
              const std::shared_ptr<mropt::Dynamics::Transcription> &Dynamics,
              const std::shared_ptr<mropt::RobotShape::Footprint> &Shape)
     : p_(P), cs(Cs), ss(Ss), cost(Cost), fspace(Fspace), dynamics(Dynamics), shape(Shape) {
-  convexify_decoupled_collisions = nullptr;
-  mission_curr = nullptr;
-  fspace->setRobotShape(Shape);
+  setup();
 }
 /**
  * Generates a new robot by copying argument robot
@@ -25,13 +23,11 @@ Robot::Robot(const Robot &robot) {
   this->shape = robot.shape->clone();
   this->fspace = std::make_shared<mropt::freespace::FreeSpace>(*this->ss);
   this->cost = std::make_shared<mropt::cost::Cost>(*this->cs, *this->ss);
-  const auto &ode_copy = robot.dynamics->ode_->clone(this->ss, this->cs);
+  const auto &ode_copy = robot.dynamics->ode_->clone(this->ss, this->cs, this->shape);
   const auto &ode_approx_copy = robot.dynamics->ode_approx_->clone(ode_copy);
   this->dynamics = robot.dynamics->clone(ode_approx_copy);
 
-  convexify_decoupled_collisions = nullptr;
-  this->mission_curr = nullptr;
-  this->fspace->setRobotShape(this->shape);
+  setup();
 }
 
 DM Robot::true_cost_l1penalty(const DM &X, const DM &U) {

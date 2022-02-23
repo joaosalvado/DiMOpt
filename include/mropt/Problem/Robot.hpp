@@ -33,7 +33,6 @@ using std::chrono::milliseconds;
 namespace mropt::Problem {
 class Robot {
 public:
-
   struct Trajectory0 {
     std::shared_ptr<MX> U0_;
     std::shared_ptr<MX> X0_;
@@ -55,6 +54,11 @@ public:
   Robot(const Robot &robot);
   Robot &operator=(const Robot &robot) = delete;
 
+  void setup(){
+      convexify_decoupled_collisions = nullptr;
+      this->mission_curr = nullptr;
+      this->fspace->setRobotShape(this->shape);
+  }
   virtual ~Robot() = default;
 
   bool backtrack();
@@ -94,6 +98,7 @@ public:
   Params p_;
 
 protected:
+    Robot(){}
 protected:
   friend class CoupledProblem;
   friend class DecoupledProblem;

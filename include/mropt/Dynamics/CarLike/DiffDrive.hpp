@@ -5,6 +5,7 @@
 #include "../ode.hpp"
 #include "mropt/StateSpace/SE2/SE2.hpp"
 #include "mropt/ControlSpace/R2/VW.hpp"
+#include "mropt/RobotShape/CircleRobot.h"
 namespace mropt::Dynamics::CarLike {
 class DiffDrive : public ode {
 private:
@@ -14,8 +15,8 @@ protected:
 public:
   DiffDrive(const std::shared_ptr<mropt::ControlSpace::VW> &vw,
             const std::shared_ptr<mropt::StateSpace::SE2> &se2,
-            double L)
-      : ode(vw, se2), L_(L) {
+            const std::shared_ptr<mropt::RobotShape::CircleRobot> &cr)
+      : ode(vw, se2, cr), L_(cr->getL()) {
     //Model
     SX X_dot = SX::vertcat(
         {vw->v_ode * cos(se2->o_ode),
@@ -27,7 +28,8 @@ public:
   }
   std::shared_ptr<mropt::Dynamics::ode> clone(
       const std::shared_ptr<mropt::StateSpace::State> &state,
-      const std::shared_ptr<mropt::ControlSpace::Control> &control) const override;
+      const std::shared_ptr<mropt::ControlSpace::Control> &control,
+      const std::shared_ptr<mropt::RobotShape::Footprint> &footprint) const override;
   ~DiffDrive() = default;
 };
 }

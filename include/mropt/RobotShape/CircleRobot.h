@@ -15,6 +15,7 @@ public:
   explicit CircleRobot(double R);
   virtual ~CircleRobot() = default;
   std::shared_ptr<Footprint> clone() const override;
+  double getL() const { return 2*R;}
 private:
   double get_safety_radius() override;
   double *get_safety_radius_ptr() override;

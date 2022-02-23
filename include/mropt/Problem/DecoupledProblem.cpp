@@ -66,6 +66,7 @@ void DecoupledProblem::setup() {
     //Solve with no collision constraints between robots
     robot->scp_d_nocol();
 
+
     // 2 - Synchronize
     robot->data_shared->sync(robot);
 
@@ -79,7 +80,6 @@ void DecoupledProblem::setup() {
 
     //Share trajectories between robots
     robot->data_shared->init_sync(robot);
-
     robot->collisions_d->setup(R, N, robot);
 
     robot->J_model =

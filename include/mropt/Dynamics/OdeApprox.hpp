@@ -7,11 +7,12 @@
 #include "TrustRegion.hpp"
 
 using namespace casadi;
-
+//namespace mropt::Problem{ template <class shape_args> class BuilderDistributedRobot;}
 namespace mropt::Dynamics {
 class OdeApprox {
 protected:
   friend class Transcription;
+  //template <class shape_args> friend class mropt::Problem::BuilderDistributedRobot;
   Slice all;
   std::shared_ptr<ode> ode_;
   std::shared_ptr<MX> X0_;
@@ -19,7 +20,11 @@ protected:
   std::vector<Function *> fv_;
   TrustRegion trust_region_;
   //casadi::Opti& ocp;
-
+private:
+    OdeApprox(){}
+    void setOde(const std::shared_ptr<ode> &ode) {
+        ode_ = ode;
+    }
 
 public:
   explicit OdeApprox(const std::shared_ptr<ode> &ode) : ode_(ode) {}

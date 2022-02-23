@@ -8,16 +8,20 @@
 #include "Robot.hpp"
 #include "mropt/Collisions/DistributedCollisions.h"
 #include "mropt/Problem/SharedData.h"
-
+// Forward Declarations
 namespace mropt::collisions{ class DistributedCollisions;}
+namespace mropt::Problem{
+    class BuilderDistributedRobot;}
 
 namespace mropt::Problem {
     class DistributedRobot : public Robot {
+        friend class BuilderDistributedRobot;
     public:
         friend class SharedData;
         int robot_id;
         std::shared_ptr<mropt::collisions::DistributedCollisions> collisions_d;
         std::shared_ptr<SharedData> data_shared;
+        DistributedRobot(){};
         DistributedRobot(int robot_id,
                          const Params &P,
                          const std::shared_ptr<mropt::ControlSpace::Control> &Cs,
@@ -33,7 +37,7 @@ namespace mropt::Problem {
         bool handle_solution_d(double pho);
         double compute_robot_costs_violations_d();
         bool backtrack_d();
-        //No collision
+        // No collision
         bool prev_solved_dummy_ocp = false;
         void scp_d_nocol();
         bool handle_solution_d_nocol(double pho);

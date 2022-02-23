@@ -34,13 +34,16 @@ void DistributedCollisions::setup(
 
   init_parameters();
   add_constraints();
+    std::cout << "here 7" << std::endl;
 //  if(robot->robot_id == 0) {
     set_J_violation();
+    std::cout << "here 8" << std::endl;
     J_violation_ = J_max_;
     J_real_ = J_sum_;
 //  }
-  set_J_violation_per_robot();
 
+  set_J_violation_per_robot();
+    std::cout << "here 9" << std::endl;
 
 
 }
@@ -207,15 +210,23 @@ void DistributedCollisions::set_J_violation(){
       for ( int k = 1; k < N-1; ++k) {
         const auto &xy_sym_r1 =  casadi::MX::sym("xr1",2,1);
         const auto &xy_sym_r2 =  casadi::MX::sym("xr2",2,1);
+          std::cout << "here 8" << std::endl;
         const auto &total_safe_dist
             = data_shared->getSafetyDistance(r1) + data_shared->getSafetyDistance(r2);
+          std::cout << "here 9" << std::endl;
+          std::cout << total_safe_dist << std::endl;
+          std::cout << col_.threshold << std::endl;
+          std::cout << col_.f(xy_sym_r1, xy_sym_r2) << std::endl;
+
         const auto &g_col_r12k = col_.f(xy_sym_r1, xy_sym_r2)
             + total_safe_dist * total_safe_dist;
+          std::cout << "here 11" << std::endl;
         g_sum = g_sum + MX::mmax(MX::vertcat({g_col_r12k, zero}));
         g_max = MX::mmax(MX::vertcat({g_max, MX::mmax(MX::vertcat({g_col_r12k, zero}))}));
       }
     }
   }
+    std::cout << "here 12" << std::endl;
   //XY vars for all robots
   std::vector<MX> X_mr{};
   for(int r = 0; r < R; ++r) {
@@ -223,6 +234,7 @@ void DistributedCollisions::set_J_violation(){
       =  casadi::MX::sym("x_mr",robot->ss->X().size1(),robot->ss->X().size2());;
     X_mr.push_back(xyo_sym);
   }
+
   J_max_ = Function("J_max", {X_mr}, {g_max});
   J_sum_ = Function("J_sum", {X_mr}, {g_sum});
 }

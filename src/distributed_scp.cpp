@@ -75,10 +75,10 @@ int main(int argc, char** argv) {
     auto se2 = std::make_shared<mropt::StateSpace::SE2>();
     //Control Space
     auto vw = std::make_shared<mropt::ControlSpace::VW>();
-    // Dynamic Model
-    auto model = std::make_shared<mropt::Dynamics::CarLike::DiffDrive>(vw, se2, L[r]);
     //Robot Shape
     auto shape = std::make_shared<mropt::RobotShape::CircleRobot>(L[r] / 2);
+    // Dynamic Model
+    auto model = std::make_shared<mropt::Dynamics::CarLike::DiffDrive>(vw, se2, shape);
     // Model Approx
     auto fot = std::make_shared<mropt::Dynamics::Approx::FirstOrderTaylor>(model);
     // Transcription Approx
