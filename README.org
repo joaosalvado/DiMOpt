@@ -1,0 +1,15 @@
+#+AUTHOR: Joao Salvado
+#+TITLE: DiMOpt: A Distributed Multi-robot Trajectory Optimization algorithm
+
+#+BEGIN_html
+<a href="https://odysee.com/@joao.salvado:7/dimopt:a?r=ARyRXJLMsqL7u9CE6ypmyEeZRyfpEphD:alt">
+</a>
+#+END_html
+
+* Installation
+** Pre-in
+#+begin_src bash
+echo "This is in Construction"
+#+end_src
+** Casadi
+** OpemMPI
