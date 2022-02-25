@@ -11,7 +11,7 @@
 #+END_html
 
 #+BEGIN_html
- <img src="http://img.youtube.com/vi/3u6eTSzHT6s/0.jpg">
+ <img src="https://github.com/joaosalvado/DiMOpt/blob/main/test.gif">
 #+END_html
 
 * Installation
