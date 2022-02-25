@@ -10,7 +10,7 @@ This software implements a *Distributed Multi-robot  trajectory Optimization Alg
 ** Simple Example
 Trajectories computed at each iteration of the DiMOpt algorithm for a fleet of five robots.
 #+BEGIN_html
- <img src="https://github.com/joaosalvado/DiMOpt/blob/main/images/transtions.gif">
+ <img src="https://github.com/joaosalvado/DiMOpt/blob/main/images/transition.gif">
 #+END_html
 
 
