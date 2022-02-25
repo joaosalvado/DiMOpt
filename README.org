@@ -15,9 +15,15 @@ Trajectories computed at each iteration of the DiMOpt algorithm for a fleet of f
 
 
 * Installation
-** Pre-in
+** Nightly Builds
+
+- [[https://eigen.tuxfamily.org/dox/GettingStarted.html][Eigen3]]:: Instalation
+** Dependencies
 #+begin_src bash
-echo "This is in Construction"
+sudo apt update
+sudo apt install python3
+sudo apt install libeigen3-dev
+sudo apt install libopencv-dev python3-opencv
 #+end_src
 ** Casadi
 ** OpemMPI
