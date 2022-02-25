@@ -6,6 +6,14 @@
 </a>
 #+END_html
 
+#+BEGIN_html
+<iframe src="https://giphy.com/embed/11JTxkrmq4bGE0" width="480" height="369" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/cat-computer-working-11JTxkrmq4bGE0">via GIPHY</a></p>
+#+END_html
+
+#+BEGIN_html
+ <img src="http://img.youtube.com/vi/3u6eTSzHT6s/0.jpg">
+#+END_html
+
 * Installation
 ** Pre-in
 #+begin_src bash
