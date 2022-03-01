@@ -3,7 +3,7 @@
 
 
 * Introduction
-** Implemented Method Overview
+** Method Overview
 This software implements a *Distributed Multi-robot  trajectory Optimization Algorithm* (DiMOpt) that deals with the problem of computing trajectories for multiple robots navigating in a shared space. This method exploits:
 1. /Consensus optimization strategies/ to tackle collision constrains that couple robot's decision variables,
 2. Single-robot /sequential convex programming/ (SCP) method for efficiently handling non-convexities introduced by dynamics.
@@ -15,6 +15,7 @@ Trajectories computed at each iteration of the DiMOpt algorithm for a fleet of f
 
 
 * Installation
+This software dependencies can be seen bellow.
 ** Dependencies
 [[https://eigen.tuxfamily.org/dox/GettingStarted.html][Eigen3]]  [[https://docs.opencv.org/4.x/d0/d3d/tutorial_general_install.html][OpenCV]]
 [[https://www.boost.org/doc/libs/1_78_0/doc/html/thread.html][Threads]] [[https://www.open-mpi.org/][OpenMPI]]
@@ -40,7 +41,8 @@ make
 #+end_src
 
 * Toy Example
-This is a simple example with three robots following a Dubins model, where start and goal configuration can be set manually (i.e. x, y, theta). For that, one can tweak start and goal vectors as illustrate in the code snippet below, that can be found in /tests/3robots.cpp
+This is a simple example with three robots following a Dubins model, where start and goal configuration can be set manually (i.e. x, y, theta). For that, one can tweak start and goal vectors as illustrate in the code snippet below, that can be found in /tests/3robots.cpp.
+Note that this code will be executed three times, so once per process/robot.
 #+begin_src cpp
 #include <mropt/mropt.h>
 #include <mropt/Problem/BuilderDistributedRobot_Dubins.h>
@@ -125,8 +127,18 @@ In the directory missions/, a json file can be found "square_sided_12" where mis
 For that you require to define each robot radius, discrete time steps, trajectory's duration, start and goal configuration, convex polygon halfplanes.
 Note: if possible for a better performance remove flags: --use-hwthread-cpus --oversubscribe
 
+|  #+BEGIN_html <img src="https://github.com/joaosalvado/DiMOpt/blob/main/images/transition.gif" #+END_html          | #+BEGIN_html  <img src="https://github.com/joaosalvado/DiMOpt/blob/main/images/transition.gif"> #+END_htm |
+|---+---|
+| #+BEGIN_html
+ <img src="https://github.com/joaosalvado/DiMOpt/blob/main/images/transition.gif">
+#+END_htm  |  #+BEGIN_html
+ <img src="https://github.com/joaosalvado/DiMOpt/blob/main/images/transition.gif">
+#+END_htm |
+
+
 * License
-<DiMOpt: a Distributed Multi-robot Trajectory Optimization Algorithm>
+DiMOpt: a Distributed Multi-robot Trajectory Optimization Algorithm
+
 Copyright (C) 2022 Joao Salvado
 
 This program is free software: you can redistribute it and/or modify
