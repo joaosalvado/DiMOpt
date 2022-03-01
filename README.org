@@ -127,9 +127,7 @@ In the directory missions/, a json file can be found "square_sided_12" where mis
 For that you require to define each robot radius, discrete time steps, trajectory's duration, start and goal configuration, convex polygon halfplanes.
 Note: if possible for a better performance remove flags: --use-hwthread-cpus --oversubscribe
 
-|  #+BEGIN_html
- <img src="https://github.com/joaosalvado/DiMOpt/blob/main/images/transition.gif">
-#+END_html            | #+BEGIN_html
+| [[https://github.com/joaosalvado/DiMOpt/blob/main/images/transition.gif]] | #+BEGIN_html |
  <img src="https://github.com/joaosalvado/DiMOpt/blob/main/images/transition.gif">
 #+END_html  |
 |---+---|
