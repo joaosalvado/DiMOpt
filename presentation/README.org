@@ -2,7 +2,7 @@
 #+TITLE: DiMOpt: A Distributed Multi-robot Trajectory Optimization algorithm
 #+REVEAL_ROOT: https://cdn.jsdelivr.net/npm/reveal.js
 
-* TODO Introduction
+* Introduction
 ** Method Overview
 This software implements a *Distributed Multi-robot  trajectory Optimization Algorithm* (DiMOpt) that deals with the problem of computing trajectories for multiple robots navigating in a shared space. This method exploits:
 1. /Consensus optimization strategies/ to tackle collision constrains that couple robot's decision variables,
@@ -13,14 +13,9 @@ Trajectories computed at each iteration of the DiMOpt algorithm for a fleet of f
  <img src="https://github.com/joaosalvado/DiMOpt/blob/main/images/transition.gif">
 #+END_html
 
-#+ATTR_HTML::width 20
+#+ATTR_HTML: :width 200
 [[file:~/js_ws/github_joao/ral-mropt/videos/oru_material/EU_Flag.jpg]]
-
-
-
-
 [[file:~/js_ws/github_joao/DiMOpt/images/transition.gif]]
-
 
 * Installation
 This software dependencies can be seen bellow.
@@ -127,7 +122,6 @@ cd bin/
 mpirun -np 3 --use-hwthread-cpus --oversubscribe 3robots
 #+end_src
 
-
 * Demo
 There is a set of specially challenging problems with different number of robots that you can execute under the examples folder. For example:
 #+begin_src sh
@@ -140,7 +134,6 @@ Note: if possible for a better performance remove flags: --use-hwthread-cpus --o
 | [[https://github.com/joaosalvado/DiMOpt/blob/main/images/circle.gif]]      | [[https://github.com/joaosalvado/DiMOpt/blob/main/images/onedown.gif]]  |
 |------------------------------------------------------------------------+---------------------------------------------------------------------|
 | [[https://github.com/joaosalvado/DiMOpt/blob/main/images/squaresided.gif]] | [[https://github.com/joaosalvado/DiMOpt/blob/main/images/takeover.gif]] |
-
 
 * License
 DiMOpt: a Distributed Multi-robot Trajectory Optimization Algorithm
@@ -158,4 +151,4 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program.  If not, see <http://www.gnu.org/licenses/

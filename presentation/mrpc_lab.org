@@ -1,0 +1,69 @@
+#+TITLE: DiMOpt: a Distributed Multi-robot Trajectory Optimization algorithm
+#+AUTHOR: João Salvado
+#+DESCRIPTION: Presentation given for MRPC lab at Örebro Universitet on Thu Mar 11 11:00 2022
+
+* Problem
+** Multi-robot Trajectory Planning
+*** Problem
+- robots
+  - complex dynamics
+  - geometric shapes
+- minimize cost
+- start and end configuration
+- no collision environment
+- no collision between robots
+#+ATTR_HTLM: :width 250
+[[file:problem.png]]
+*** Solution
+- Control sequence (trajectories)
+#+ATTR_HTLM: :width 300
+[[file:solution.png]]
+
+
+#+begin_src shell
+cd ../examples/
+ls
+cd ..
+cp -a missions/* bin/
+cd bin/
+mpirun -np 6 --use-hwthread-cpus --oversubscribe ./distributed_scp square_sided_6 0.5pol.png
+cd ..
+#+end_src
+
+#+RESULTS:
+
+*** Overall
+*Problem*
+1. Robots
+   a) complex dynamics (/F/) 💀
+   b) geometric shapes
+2. Minimize cost (/f_0/)
+3. Start and end configuration (/x_start/ , /x_goal/)
+4. No collision environment (/H/)
+5. No collision between robots (/C/) 💀
+*Solution*
+- Control sequence (/u/)
+[[file:mrtp.png]]
+* Why is this Difficult!
+1. Complex dynamics (/F/) 💀
+2. No collision between robots (/C/) 💀
+* Why is this Difficult!
+1. Complex dynamics (/F/) 💀
+   - Compute KKT conditions (optimality) - not trivial *[Optimizie* ➡ *Discretize]*
+   *OR*
+   - Transcription from continuous to discrete time into NLP *[Discretize* ➡ Opitmize]
+
+   *Both*  are Non-convex [Pfaffian constraints]
+2. No collision between robots (/C/) 💀
+* Why is this Difficult!
+1. Complex dynamics (/F/) 💀
+   - Compute KKT conditions (optimality) - not trivial *[Optimizie* ➡ *Discretize]*
+   *OR*
+   - Transcription from continuous to discrete time into NLP *[Discretize* ➡ Opitmize]
+
+   *Both*  are Non-convex [Pfaffian constraints]
+2. No collision between robots (/C/) 💀
+   - Couples robots's decision variables
+* Previous Work
+
+* Solution
