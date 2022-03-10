@@ -2,8 +2,7 @@
 #+AUTHOR: João Salvado
 #+DESCRIPTION: Presentation given for MRPC lab at Örebro Universitet on Thu Mar 11 11:00 2022
 
-* Problem
-** Multi-robot Trajectory Planning
+* Multi-robot Trajectory Planning
 *** Problem
 - robots
   - complex dynamics
@@ -16,7 +15,7 @@
 [[file:problem.png]]
 *** Solution
 - Control sequence (trajectories)
-#+ATTR_HTLM: :width 300
+#+ATTR_HTLM: :width 250
 [[file:solution.png]]
 
 
@@ -30,11 +29,9 @@ mpirun -np 6 --use-hwthread-cpus --oversubscribe ./distributed_scp square_sided_
 cd ..
 #+end_src
 
-#+RESULTS:
-
 *** Overall
 *Problem*
-1. Robots
+1. RobotsTr
    a) complex dynamics (/F/) 💀
    b) geometric shapes
 2. Minimize cost (/f_0/)
@@ -64,6 +61,21 @@ cd ..
    *Both*  are Non-convex [Pfaffian constraints]
 2. No collision between robots (/C/) 💀
    - Couples robots's decision variables
-* Previous Work
+* How to address this issues?
+** Complex dynamics
+Sequential Convex Programming
+- short summary: iteratively convexify and optimize
+- convexify dynamics (/f_r/) and collisions (/c_ij/)
+- L1 penalti cost function:
+
+[[file:l1penalti.png]]
+
+#+ATTR_HTML: :width 100
+| Original Problem | Approx. Problem         |
+| Before           | After                   |
+| [[file:mrtp.png]]    | [[file:approx_problem.png]] |
+| Solved once      | Iteratively solved      |
+| Slow             | Fast                    |
+** Collisions
 
 * Solution
