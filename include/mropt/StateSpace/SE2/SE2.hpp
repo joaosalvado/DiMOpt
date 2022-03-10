@@ -5,6 +5,7 @@
 #include "../State.hpp"
 using namespace casadi;
 namespace mropt::StateSpace {
+
 class SE2 : public State {
 private:
   casadi::Slice all{};
@@ -49,7 +50,7 @@ public:
     return *this;
   }
 
-  ~SE2();
+  virtual ~SE2();
 };
 }
 #endif

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>DiMOpt: A Distributed Multi-robot Trajectory Optimization algorithm</title>
+<meta name="author" content="(Joao Salvado)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.css"/>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/theme/moon.css" id="theme"/>
+
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'https://cdn.jsdelivr.net/npm/reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1 class="title">DiMOpt: A Distributed Multi-robot Trajectory Optimization algorithm</h1><h2 class="author">Joao Salvado</h2><p class="date">Created: 2022-03-10 tor 13:01</p>
+</section>
+<section id="sec-table-of-contents"><div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#/slide-org5b3a2a2">1. <span class="todo TODO">TODO</span> Introduction</a>
+<ul>
+<li><a href="#/slide-org8588f38">1.1. Method Overview</a></li>
+<li><a href="#/slide-org7ca3fed">1.2. Simple Example</a></li>
+</ul>
+</li>
+<li><a href="#/slide-orgde199a0">2. Installation</a>
+<ul>
+<li><a href="#/slide-orge3fd9c5">2.1. Dependencies</a>
+<ul>
+<li><a href="#/slide-org0a564a5">2.1.1. CasADi</a></li>
+<li><a href="#/slide-org9619b3f">2.1.2. Matplot++</a></li>
+</ul>
+</li>
+<li><a href="#/slide-orgb027a45">2.2. Build (CMake)</a></li>
+</ul>
+</li>
+<li><a href="#/slide-orgbca5a9f">3. Toy Example</a></li>
+<li><a href="#/slide-orga36c6ed">4. Demo</a></li>
+<li><a href="#/slide-orga43434b">5. License</a></li>
+</ul>
+</div>
+</div>
+</section>
+
+<section>
+<section id="slide-org5b3a2a2">
+<h2 id="org5b3a2a2"><span class="section-number-2">1.</span> <span class="todo TODO">TODO</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+</section>
+<section id="slide-org8588f38">
+<h3 id="org8588f38"><span class="section-number-3">1.1.</span> Method Overview</h3>
+<p>
+This software implements a <b>Distributed Multi-robot  trajectory Optimization Algorithm</b> (DiMOpt) that deals with the problem of computing trajectories for multiple robots navigating in a shared space. This method exploits:
+</p>
+<ol>
+<li><i>Consensus optimization strategies</i> to tackle collision constrains that couple robot&rsquo;s decision variables,</li>
+<li>Single-robot <i>sequential convex programming</i> (SCP) method for efficiently handling non-convexities introduced by dynamics.</li>
+
+</ol>
+</section>
+<section id="slide-org7ca3fed">
+<h3 id="org7ca3fed"><span class="section-number-3">1.2.</span> Simple Example</h3>
+<p>
+Trajectories computed at each iteration of the DiMOpt algorithm for a fleet of five robots.
+</p>
+<div class="html" id="org729a98d">
+<p>
+&lt;img src=&ldquo;<img src="https://github.com/joaosalvado/DiMOpt/blob/main/images/transition.gif" alt="transition.gif" />&rdquo;&gt;
+</p>
+
+</div>
+
+
+<div id="orga3d8960" class="figure">
+<p><img src="file:///home/ohmy/js_ws/github_joao/ral-mropt/videos/oru_material/EU_Flag.jpg" alt="EU_Flag.jpg" width="20" />
+</p>
+</div>
+
+
+
+
+
+<div id="orge30a5d4" class="figure">
+<p><img src="file:///home/ohmy/js_ws/github_joao/DiMOpt/images/transition.gif" alt="transition.gif" />
+</p>
+</div>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgde199a0">
+<h2 id="orgde199a0"><span class="section-number-2">2.</span> Installation</h2>
+<p>
+This software dependencies can be seen bellow.
+</p>
+</section>
+<section id="slide-orge3fd9c5">
+<h3 id="orge3fd9c5"><span class="section-number-3">2.1.</span> Dependencies</h3>
+<p>
+<a href="https://eigen.tuxfamily.org/dox/GettingStarted.html">Eigen3</a>  <a href="https://docs.opencv.org/4.x/d0/d3d/tutorial_general_install.html">OpenCV</a>
+<a href="https://www.boost.org/doc/libs/1_78_0/doc/html/thread.html">Threads</a> <a href="https://www.open-mpi.org/">OpenMPI</a>
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-sh"   ><code trim><span style="color: #ECBE7B;">sudo</span> apt update
+<span style="color: #ECBE7B;">sudo</span> apt install python3
+<span style="color: #ECBE7B;">sudo</span> apt install libeigen3-dev
+<span style="color: #ECBE7B;">sudo</span> apt install libopencv-dev python3-opencv
+<span style="color: #ECBE7B;">sudo</span> apt install libboost-thread-dev
+<span style="color: #ECBE7B;">sudo</span> apt-get install -y libopenmpi-dev
+</code></pre>
+</div>
+</section>
+<section id="slide-org0a564a5">
+<h4 id="org0a564a5"><span class="section-number-4">2.1.1.</span> CasADi</h4>
+<p>
+Casadi installation requires several steps that can be followed in <a href="https://github.com/casadi/casadi/wiki/InstallationLinux">link</a>.
+Build casadi with IPOPT and HSL library ma27.
+</p>
+</section>
+<section id="slide-org9619b3f">
+<h4 id="org9619b3f"><span class="section-number-4">2.1.2.</span> Matplot++</h4>
+<p>
+Choose your preferred installation method in <a href="https://github.com/alandefreitas/matplotplusplus#integration">link</a>
+</p>
+</section>
+<section id="slide-orgb027a45">
+<h3 id="orgb027a45"><span class="section-number-3">2.2.</span> Build (CMake)</h3>
+<pre  class="example" >
+mkdir build
+cd build/
+cmake ..
+make
+</pre>
+
+</section>
+</section>
+<section>
+<section id="slide-orgbca5a9f">
+<h2 id="orgbca5a9f"><span class="section-number-2">3.</span> Toy Example</h2>
+<p>
+This is a simple example with three robots following a Dubins model, where start and goal configuration can be set manually (i.e. x, y, theta). For that, one can tweak start and goal vectors as illustrate in the code snippet below, that can be found in /tests/3robots.cpp.
+Note that this code will be executed three times, so once per process/robot.
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-cpp"   ><code trim><span style="color: #51afef; font-weight: bold;">#include</span> <span style="color: #98be65;">&lt;mropt/mropt.h&gt;</span>
+<span style="color: #51afef; font-weight: bold;">#include</span> <span style="color: #98be65;">&lt;mropt/Problem/BuilderDistributedRobot_Dubins.h&gt;</span>
+
+<span style="color: #ECBE7B;">int</span> <span style="color: #c678dd;">main</span>(<span style="color: #ECBE7B;">int</span> <span style="color: #dcaeea;">argc</span>, <span style="color: #ECBE7B;">char</span> **<span style="color: #dcaeea;">argv</span>) {
+
+    <span style="color: #5B6268;">// </span><span style="color: #5B6268;">(...) OpenMPI initialized</span>
+
+    <span style="color: #5B6268;">// </span><span style="color: #5B6268;">1 - Mission</span>
+    <span style="color: #ECBE7B;">int</span> <span style="color: #dcaeea;">N</span> = <span style="color: #da8548; font-weight: bold;">40</span>; <span style="color: #5B6268;">// </span><span style="color: #5B6268;">Transcription Discrete Time Steps</span>
+    <span style="color: #ECBE7B;">double</span> <span style="color: #dcaeea;">T</span> = <span style="color: #da8548; font-weight: bold;">7</span>; <span style="color: #5B6268;">// </span><span style="color: #5B6268;">Trajectory's  Duraction</span>
+
+    <span style="color: #5B6268;">// </span><span style="color: #5B6268;">1.1) Starting Configuration (x, y, theta) for 3 robots</span>
+    <span style="color: #a9a1e1;">std</span>::<span style="color: #ECBE7B;">vector</span>&lt;<span style="color: #a9a1e1;">std</span>::<span style="color: #ECBE7B;">vector</span>&lt;<span style="color: #ECBE7B;">double</span>&gt;&gt; <span style="color: #dcaeea;">start</span> =
+            {
+                    {<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">1</span>, -<span style="color: #da8548; font-weight: bold;">0.5</span> * M_PI},
+                    {<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">4</span>, <span style="color: #da8548; font-weight: bold;">0.5</span> * M_PI},
+                    {<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">4</span>, <span style="color: #da8548; font-weight: bold;">0</span>}
+            };
+    <span style="color: #5B6268;">// </span><span style="color: #5B6268;">1.2) Goal Configuration (x,y, theta) for 3 robot</span>
+    <span style="color: #a9a1e1;">std</span>::<span style="color: #ECBE7B;">vector</span>&lt;<span style="color: #a9a1e1;">std</span>::<span style="color: #ECBE7B;">vector</span>&lt;<span style="color: #ECBE7B;">double</span>&gt;&gt; <span style="color: #dcaeea;">goal</span> =
+            {
+                    {<span style="color: #da8548; font-weight: bold;">2</span>, <span style="color: #da8548; font-weight: bold;">2.5</span>, <span style="color: #da8548; font-weight: bold;">0</span>},
+                    {<span style="color: #da8548; font-weight: bold;">3</span>, <span style="color: #da8548; font-weight: bold;">2</span>,   <span style="color: #da8548; font-weight: bold;">0</span>},
+                    {<span style="color: #da8548; font-weight: bold;">4</span>, <span style="color: #da8548; font-weight: bold;">1</span>,   <span style="color: #da8548; font-weight: bold;">0</span>}
+            };
+    <span style="color: #5B6268;">// </span><span style="color: #5B6268;">1.3) Length and Width</span>
+    <span style="color: #a9a1e1;">std</span>::<span style="color: #ECBE7B;">vector</span>&lt;<span style="color: #ECBE7B;">double</span>&gt; <span style="color: #dcaeea;">L</span> = {<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0.6</span>, <span style="color: #da8548; font-weight: bold;">1.3</span>};
+    <span style="color: #a9a1e1;">std</span>::<span style="color: #ECBE7B;">vector</span>&lt;<span style="color: #ECBE7B;">double</span>&gt; <span style="color: #dcaeea;">W</span> = {<span style="color: #da8548; font-weight: bold;">1</span>, <span style="color: #da8548; font-weight: bold;">0.6</span>, <span style="color: #da8548; font-weight: bold;">1.3</span>};
+
+    <span style="color: #5B6268;">//</span><span style="color: #5B6268;">(...)</span>
+
+    <span style="color: #5B6268;">// </span><span style="color: #5B6268;">2 - Build a Robot</span>
+    <span style="color: #a9a1e1;">mropt</span>::<span style="color: #a9a1e1;">Problem</span>::<span style="color: #ECBE7B;">BuilderDistributedRobot_Dubins</span> <span style="color: #dcaeea;">builder_dubins_car</span>;
+    <span style="color: #51afef;">auto</span> <span style="color: #dcaeea;">params</span> = <span style="color: #a9a1e1;">mropt</span>::<span style="color: #a9a1e1;">Problem</span>::<span style="color: #a9a1e1;">Robot</span>::Params{<span style="color: #da8548; font-weight: bold;">0.0</span>, T, N};
+    <span style="color: #51afef;">auto</span> <span style="color: #dcaeea;">sa</span> = <span style="color: #51afef;">new</span> <span style="color: #ECBE7B;">ShapeArgs_type</span>(); sa-&gt;L = L[r];
+    builder_dubins_car.make_robot(r, sa, params);
+    <span style="color: #51afef;">auto</span> <span style="color: #dcaeea;">robot_d</span> = builder_dubins_car.getDistributedRobot();
+    <span style="color: #5B6268;">// </span><span style="color: #5B6268;">3 - Assign missions to the robots</span>
+    robot_d-&gt;addMission(start[r], goal[r], {});
+
+    <span style="color: #5B6268;">// </span><span style="color: #5B6268;">4 -Solve</span>
+    <span style="color: #5B6268;">// </span><span style="color: #5B6268;">4.1 - Setup Decoupled Plotter and Solver</span>
+
+    <span style="color: #5B6268;">// </span><span style="color: #5B6268;">(...) plotter</span>
+
+    <span style="color: #a9a1e1;">mropt</span>::<span style="color: #a9a1e1;">Problem</span>::<span style="color: #ECBE7B;">DecoupledProblem</span> <span style="color: #dcaeea;">mrprob_d</span>{r};
+    mrprob_d.setParams(R, N);
+    mrprob_d.addRobot(robot_d);
+
+    <span style="color: #5B6268;">// </span><span style="color: #5B6268;">(...)</span>
+
+    <span style="color: #5B6268;">// </span><span style="color: #5B6268;">4.2 - Solve</span>
+    <span style="color: #51afef;">try</span> {
+        mrprob_d.solve();
+        <span style="color: #5B6268;">// </span><span style="color: #5B6268;">Plot Trajectories</span>
+        mrprob_d.plot_trajectories(<span style="color: #a9a1e1;">std</span>::vector&lt;<span style="color: #a9a1e1;">std</span>::<span style="color: #ECBE7B;">shared_ptr</span>&lt;<span style="color: #a9a1e1;">mropt</span>::<span style="color: #a9a1e1;">Dynamics</span>::ode&gt;&gt;(R, robot_d-&gt;get_ode()));
+    } <span style="color: #51afef;">catch</span> (...) {
+        <span style="color: #a9a1e1;">std</span>::exit(<span style="color: #da8548; font-weight: bold;">1</span>);
+    }
+}
+</code></pre>
+</div>
+
+<p>
+After build the project you can find an executable in /bin/3robots. This can be executed with the following command
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-sh"   ><code trim><span style="color: #ECBE7B;">cd</span> bin/
+mpirun -np <span style="color: #da8548; font-weight: bold;">3</span> 3robots
+</code></pre>
+</div>
+<p>
+If you are not able to use 3, then run the following command instead:
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-sh"   ><code trim><span style="color: #ECBE7B;">cd</span> bin/
+mpirun -np <span style="color: #da8548; font-weight: bold;">3</span> --use-hwthread-cpus --oversubscribe 3robots
+</code></pre>
+</div>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orga36c6ed">
+<h2 id="orga36c6ed"><span class="section-number-2">4.</span> Demo</h2>
+<p>
+There is a set of specially challenging problems with different number of robots that you can execute under the examples folder. For example:
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-sh"   ><code trim>./square_sided_12.sh
+</code></pre>
+</div>
+<p>
+In the directory missions/, a json file can be found &ldquo;square<sub>sided</sub><sub>12</sub>&rdquo; where mission is defined.
+For that you require to define each robot radius, discrete time steps, trajectory&rsquo;s duration, start and goal configuration, convex polygon halfplanes.
+Note: if possible for a better performance remove flags: &#x2013;use-hwthread-cpus &#x2013;oversubscribe
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left"><img src="https://github.com/joaosalvado/DiMOpt/blob/main/images/circle.gif" alt="circle.gif" /></th>
+<th scope="col" class="org-left"><img src="https://github.com/joaosalvado/DiMOpt/blob/main/images/onedown.gif" alt="onedown.gif" /></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left"><img src="https://github.com/joaosalvado/DiMOpt/blob/main/images/squaresided.gif" alt="squaresided.gif" /></td>
+<td class="org-left"><img src="https://github.com/joaosalvado/DiMOpt/blob/main/images/takeover.gif" alt="takeover.gif" /></td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orga43434b">
+<h2 id="orga43434b"><span class="section-number-2">5.</span> License</h2>
+<p>
+DiMOpt: a Distributed Multi-robot Trajectory Optimization Algorithm
+</p>
+
+<p>
+Copyright (C) 2022 Joao Salvado
+</p>
+
+<p>
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+</p>
+
+<p>
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+</p>
+
+<p>
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
+</p>
+</section>
+</section>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+
+});
+
+</script>
+</body>
+</html>
