@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Dimopt: a Distributed Multi-robot Trajectory Optimization algorithm</title>
+<meta name="author" content="(João Salvado)"/>
+<meta name="description" content="Presentation given for MRPC lab at Örebro Universitet on Thu Mar 11 11:00 2022"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.css"/>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/theme/moon.css" id="theme"/>
+
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'https://cdn.jsdelivr.net/npm/reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1 class="title">Dimopt: a Distributed Multi-robot Trajectory Optimization algorithm</h1><h2 class="author">João Salvado</h2><p class="date">Created: 2022-03-11 fre 13:34</p>
+</section>
+<section id="sec-table-of-contents"><div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#/slide-org66265c7">1. Multi-robot Trajectory Planning</a>
+<ul>
+<li>
+<ul>
+<li><a href="#/slide-org094bf7f">1.0.1. Problem</a></li>
+<li><a href="#/slide-org7e52270">1.0.2. Solution</a></li>
+<li><a href="#/slide-orgb7ecb3e">1.0.3. Overall</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#/slide-org771e60e">2. Why is this Difficult!</a></li>
+<li><a href="#/slide-org3508773">3. Why is this Difficult!</a></li>
+<li><a href="#/slide-org0121ce0">4. Why is this Difficult!</a></li>
+<li><a href="#/slide-orgdeaf39d">5. Why is this Difficult!</a></li>
+<li><a href="#/slide-orgb970c60">6. How to address this issues?</a></li>
+<li><a href="#/slide-org0e186cf">7. How to address this issues?</a></li>
+<li><a href="#/slide-orgb83bdfc">8. How to address this issues?</a></li>
+<li><a href="#/slide-orga9a07c8">9. How to address this issues?</a></li>
+<li><a href="#/slide-org1604fd3">10. How to address this issues?</a></li>
+<li><a href="#/slide-orgbb3a9ad">11. How to address this issues?</a></li>
+<li><a href="#/slide-org754ef21">12. How to address this issues?</a></li>
+<li><a href="#/slide-org27181bf">13. How to address this issues?</a></li>
+<li><a href="#/slide-org31f2c82">14. How to address this issues?</a></li>
+<li><a href="#/slide-orgf3ec089">15. How to address this issues?</a></li>
+<li><a href="#/slide-org82fd8b2">16. Toy Example</a></li>
+<li><a href="#/slide-orgc0b481c">17. Demo</a></li>
+<li><a href="#/slide-orgc7069c9">18. The End</a></li>
+</ul>
+</div>
+</div>
+</section>
+<section>
+<section id="slide-org66265c7">
+<h2 id="org66265c7"><span class="section-number-2">1.</span> Multi-robot Trajectory Planning</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+</section>
+<section id="slide-org094bf7f">
+<h4 id="org094bf7f"><span class="section-number-4">1.0.1.</span> Problem</h4>
+<ul>
+<li>robots
+<ul>
+<li>complex dynamics</li>
+<li>geometric shapes</li>
+
+</ul></li>
+<li>minimize cost</li>
+<li>start and end configuration</li>
+<li>no collision environment</li>
+<li>no collision between robots</li>
+
+</ul>
+
+<div id="org68bed91" class="figure">
+<p><img src="problem.png" alt="problem.png" />
+</p>
+</div>
+</section>
+<section id="slide-org7e52270">
+<h4 id="org7e52270"><span class="section-number-4">1.0.2.</span> Solution</h4>
+<ul>
+<li>Control sequence (trajectories)</li>
+
+</ul>
+
+<div id="org6704c30" class="figure">
+<p><img src="solution.png" alt="solution.png" />
+</p>
+</div>
+
+</section>
+<section id="slide-orgb7ecb3e">
+<h4 id="orgb7ecb3e"><span class="section-number-4">1.0.3.</span> Overall</h4>
+<p>
+<b>Problem</b>
+</p>
+<ol>
+<li>Robots
+<ol>
+<li>complex dynamics (<i>F</i>) 💀</li>
+<li>geometric shapes</li>
+
+</ol></li>
+<li>Minimize cost (<i>f_0</i>)</li>
+<li>Start and end configuration (<i>x_start</i> , <i>x_goal</i>)</li>
+<li>No collision environment (<i>H</i>)</li>
+<li>No collision between robots (<i>C</i>) 💀</li>
+
+</ol>
+<p>
+<b>Solution</b>
+</p>
+<ul>
+<li>Control sequence (<i>u</i>)</li>
+
+</ul>
+
+<div id="org3df5bf3" class="figure">
+<p><img src="mrtp.png" alt="mrtp.png" width="400" />
+</p>
+</div>
+</section>
+</section>
+<section>
+<section id="slide-org771e60e">
+<h2 id="org771e60e"><span class="section-number-2">2.</span> Why is this Difficult!</h2>
+<ol>
+<li>Complex dynamics (<i>F</i>) 💀</li>
+<li>No collision between robots (<i>C</i>) 💀</li>
+
+</ol>
+</section>
+</section>
+<section>
+<section id="slide-org3508773">
+<h2 id="org3508773"><span class="section-number-2">3.</span> Why is this Difficult!</h2>
+<ol>
+<li><p>
+Complex dynamics (<i>F</i>) 💀
+</p>
+<ul>
+<li>Compute KKT conditions (optimality) - not trivial <b>[Optimize</b> ➡ <b>Discretize]</b></li>
+
+</ul>
+<p>
+<b>OR</b>
+</p>
+<ul>
+<li>Transcription from continuous to discrete time into NLP <b>[Discretize</b> ➡ Optimize]</li>
+
+</ul></li>
+
+</ol>
+</section>
+</section>
+<section>
+<section id="slide-org0121ce0">
+<h2 id="org0121ce0"><span class="section-number-2">4.</span> Why is this Difficult!</h2>
+<ol>
+<li><p>
+Complex dynamics (<i>F</i>) 💀
+</p>
+<ul>
+<li>Compute KKT conditions (optimality) - not trivial <b>[Optimize</b> ➡ <b>Discretize]</b></li>
+
+</ul>
+<p>
+<b>OR</b>
+</p>
+<ul>
+<li>Transcription from continuous to discrete time into NLP <b>[Discretize</b> ➡ Optimize]</li>
+
+</ul>
+
+<p>
+<b>Both</b>  are Non-convex [Pfaffian constraints]
+</p></li>
+
+</ol>
+</section>
+</section>
+<section>
+<section id="slide-orgdeaf39d">
+<h2 id="orgdeaf39d"><span class="section-number-2">5.</span> Why is this Difficult!</h2>
+<ol>
+<li><p>
+Complex dynamics (<i>F</i>) 💀
+</p>
+<ul>
+<li>Compute KKT conditions (optimality) - not trivial <b>[Optimize</b> ➡ <b>Discretize]</b></li>
+
+</ul>
+<p>
+<b>OR</b>
+</p>
+<ul>
+<li>Transcription from continuous to discrete time into NLP <b>[Discretize</b> ➡ Optimize]</li>
+
+</ul>
+
+<p>
+<b>Both</b>  are Non-convex [Pfaffian constraints]
+</p></li>
+<li>No collision between robots (<i>C</i>) 💀
+<ul>
+<li>Couples robots&rsquo;s decision variables</li>
+
+</ul></li>
+
+</ol>
+</section>
+</section>
+<section>
+<section id="slide-orgb970c60">
+<h2 id="orgb970c60"><span class="section-number-2">6.</span> How to address this issues?</h2>
+<ol>
+<li>Complex dynamics</li>
+<li>Collisions</li>
+
+</ol>
+</section>
+</section>
+<section>
+<section id="slide-org0e186cf">
+<h2 id="org0e186cf"><span class="section-number-2">7.</span> How to address this issues?</h2>
+<p>
+<b>1. Complex dynamics</b>
+</p>
+
+<p>
+Sequential Convex Programming
+</p>
+<ul>
+<li>short summary: iterativelly convexify and optimize</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgb83bdfc">
+<h2 id="orgb83bdfc"><span class="section-number-2">8.</span> How to address this issues?</h2>
+<p>
+<b>1. Complex dynamics</b>
+</p>
+
+<p>
+Sequential Convex Programming
+</p>
+<ul>
+<li>short summary: iterativelly convexify and optimize</li>
+<li>convexify dynamics (f<sub>r</sub>) and collisions (c<sub>ij</sub>)</li>
+<li>L1 penalty cost function:</li>
+
+</ul>
+
+<div id="org1ed4eef" class="figure">
+<p><img src="l1penalti.png" alt="l1penalti.png" width="400" />
+</p>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orga9a07c8">
+<h2 id="orga9a07c8"><span class="section-number-2">9.</span> How to address this issues?</h2>
+<p>
+<b>1. Complex dynamics</b>
+Sequential Convex Programming
+</p>
+<ul>
+<li>short summary: iterativelly convexify and optimize</li>
+<li>convexify dynamics (f<sub>r</sub>) and collisions (c<sub>ij</sub>)</li>
+<li>L1 penalty cost function:</li>
+
+</ul>
+
+<div id="orgb272f7e" class="figure">
+<p><img src="l1penalti.png" alt="l1penalti.png" />
+</p>
+</div>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Original Problem</td>
+<td class="org-left">Approx. Problem</td>
+</tr>
+
+<tr>
+<td class="org-left">Before</td>
+<td class="org-left">After</td>
+</tr>
+
+<tr>
+<td class="org-left"><img src="mrtp.png" alt="mrtp.png" /></td>
+<td class="org-left"><img src="approx_problem.png" alt="approx_problem.png" /></td>
+</tr>
+
+<tr>
+<td class="org-left">Solved once</td>
+<td class="org-left">Iteratively solved</td>
+</tr>
+
+<tr>
+<td class="org-left">Slow</td>
+<td class="org-left">Fast</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+</section>
+<section>
+<section id="slide-org1604fd3">
+<h2 id="org1604fd3"><span class="section-number-2">10.</span> How to address this issues?</h2>
+<p>
+<b>2. Collision Constraints</b>
+</p>
+
+<p>
+L2-norm between each robot xy
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgbb3a9ad">
+<h2 id="orgbb3a9ad"><span class="section-number-2">11.</span> How to address this issues?</h2>
+<p>
+<b>2. Collision Constraints</b>
+</p>
+
+<p>
+L2-norm between each robot xy
+Change q<sub>j</sub> is fixed (all other robots)
+</p>
+
+<div id="org8ab4bf9" class="figure">
+<p><img src="l2norm.png" alt="l2norm.png" width="400" />
+</p>
+</div>
+</section>
+</section>
+<section>
+<section id="slide-org754ef21">
+<h2 id="org754ef21"><span class="section-number-2">12.</span> How to address this issues?</h2>
+<p>
+<b>2. Collision Constraints</b>
+</p>
+
+<p>
+L2-norm between each robot xy
+Change q<sub>j</sub> is fixed (all other robots)
+</p>
+<p width="400">
+<img src="l2norm.png" alt="l2norm.png" width="400" />
+Cost Function
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Before</td>
+<td class="org-left">After</td>
+</tr>
+
+<tr>
+<td class="org-left"><img src="l1penalti.png" alt="l1penalti.png" /></td>
+<td class="org-left"><img src="robot_cost.png" alt="robot_cost.png" /></td>
+</tr>
+
+<tr>
+<td class="org-left">All robots</td>
+<td class="org-left">Single Robot</td>
+</tr>
+
+<tr>
+<td class="org-left">Coupled</td>
+<td class="org-left">Parallel</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+</section>
+<section>
+<section id="slide-org27181bf">
+<h2 id="org27181bf"><span class="section-number-2">13.</span> How to address this issues?</h2>
+<p>
+<b>2. Collision Constraints</b>
+</p>
+
+<p>
+<b>Missing Piece</b>
+These C<sub>ij</sub> are pair wise and need to converge
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-org31f2c82">
+<h2 id="org31f2c82"><span class="section-number-2">14.</span> How to address this issues?</h2>
+<p>
+<b>2. Collision Constraints</b>
+</p>
+
+<p>
+Consensus Optimization (Proximal Method)
+</p>
+<ul>
+<li>Introduce consensus vars z<sub>r</sub> and penalty <i>λ</i></li>
+<li>Penalize for non-consensus</li>
+
+</ul>
+
+<div id="orgae4e40c" class="figure">
+<p><img src="consensus_cost.png" alt="consensus_cost.png" />
+</p>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgf3ec089">
+<h2 id="orgf3ec089"><span class="section-number-2">15.</span> How to address this issues?</h2>
+<p>
+<b>2. Collision Constraints</b>
+</p>
+
+<p>
+Consensus Optimization (Proximal Method)
+</p>
+<ul>
+<li>Introduce consensus vars z<sub>r</sub> and penalty <i>λ</i></li>
+<li>Penalize for non-consensus</li>
+
+</ul>
+
+<div id="org45de735" class="figure">
+<p><img src="consensus_cost.png" alt="consensus_cost.png" />
+</p>
+</div>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Before</td>
+<td class="org-left">After</td>
+</tr>
+
+<tr>
+<td class="org-left"><img src="approx_problem.png" alt="approx_problem.png" /></td>
+<td class="org-left"><img src="consensus_prob.png" alt="consensus_prob.png" /></td>
+</tr>
+
+<tr>
+<td class="org-left">All robots</td>
+<td class="org-left">Single robot (parallel)</td>
+</tr>
+
+<tr>
+<td class="org-left">Iteratively</td>
+<td class="org-left">Iteratively</td>
+</tr>
+
+<tr>
+<td class="org-left">Optimize + Convexify</td>
+<td class="org-left">Optimize + Convexity + Share</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<section id="slide-org82fd8b2">
+<h2 id="org82fd8b2"><span class="section-number-2">16.</span> Toy Example</h2>
+<p>
+Problem with 5 Robots
+Solution at each iteration
+<a href="transition.webm">video</a>
+</p>
+</section>
+</section>
+<section>
+<section id="slide-orgc0b481c">
+<h2 id="orgc0b481c"><span class="section-number-2">17.</span> Demo</h2>
+
+<div id="orgaebd5ce" class="figure">
+<p><img src="problem.png" alt="problem.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+
+<pre  class="src src-shell"   ><code trim><span style="color: #fabd2f;">cd</span> ../examples/
+<span style="color: #fabd2f;">ls</span>
+<span style="color: #fabd2f;">cd</span> ..
+<span style="color: #fabd2f;">cp</span> -a missions/* bin/
+<span style="color: #fabd2f;">cd</span> bin/
+mpirun -np <span style="color: #d3869b; font-weight: bold;">6</span> --use-hwthread-cpus --oversubscribe ./distributed_scp square_sided_6 0.5pol.png
+<span style="color: #fabd2f;">cd</span> ..
+</code></pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgc7069c9">
+<h2 id="orgc7069c9"><span class="section-number-2">18.</span> The End</h2>
+<p>
+Thank You! 🐂
+</p>
+</section>
+</section>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+
+});
+
+</script>
+</body>
+</html>

@@ -1,7 +1,8 @@
-#+TITLE: DiMOpt: a Distributed Multi-robot Trajectory Optimization algorithm
+#+Title: Dimopt: a Distributed Multi-robot Trajectory Optimization algorithm
 #+AUTHOR: João Salvado
 #+DESCRIPTION: Presentation given for MRPC lab at Örebro Universitet on Thu Mar 11 11:00 2022
-
+#+OPTIONS: ^:{}
+#+REVEAL_ROOT: https://cdn.jsdelivr.net/npm/reveal.js
 * Multi-robot Trajectory Planning
 *** Problem
 - robots
@@ -18,6 +19,133 @@
 #+ATTR_HTLM: :width 250
 [[file:solution.png]]
 
+*** Overall
+*Problem*
+1. Robots
+   a) complex dynamics (/F/) 💀
+   b) geometric shapes
+2. Minimize cost (/f_0/)
+3. Start and end configuration (/x_start/ , /x_goal/)
+4. No collision environment (/H/)
+5. No collision between robots (/C/) 💀
+*Solution*
+- Control sequence (/u/)
+#+ATTR_HTML: :width 400
+[[file:mrtp.png]]
+* Why is this Difficult!
+1. Complex dynamics (/F/) 💀
+2. No collision between robots (/C/) 💀
+* Why is this Difficult!
+1. Complex dynamics (/F/) 💀
+   - Compute KKT conditions (optimality) - not trivial *[Optimize* ➡ *Discretize]*
+   *OR*
+   - Transcription from continuous to discrete time into NLP *[Discretize* ➡ Optimize]
+* Why is this Difficult!
+1. Complex dynamics (/F/) 💀
+   - Compute KKT conditions (optimality) - not trivial *[Optimize* ➡ *Discretize]*
+   *OR*
+   - Transcription from continuous to discrete time into NLP *[Discretize* ➡ Optimize]
+
+   *Both*  are Non-convex [Pfaffian constraints]
+* Why is this Difficult!
+1. Complex dynamics (/F/) 💀
+   - Compute KKT conditions (optimality) - not trivial *[Optimize* ➡ *Discretize]*
+   *OR*
+   - Transcription from continuous to discrete time into NLP *[Discretize* ➡ Optimize]
+
+   *Both*  are Non-convex [Pfaffian constraints]
+2. No collision between robots (/C/) 💀
+   - Couples robots's decision variables
+* How to address this issues?
+1. Complex dynamics
+2. Collisions
+* How to address this issues?
+*1. Complex dynamics*
+
+Sequential Convex Programming
+- short summary: iterativelly convexify and optimize
+
+* How to address this issues?
+*1. Complex dynamics*
+
+Sequential Convex Programming
+- short summary: iterativelly convexify and optimize
+- convexify dynamics (f_{r}) and collisions (c_{ij})
+- L1 penalty cost function:
+#+ATTR_HTML: :width 400
+[[file:l1penalti.png]]
+
+* How to address this issues?
+*1. Complex dynamics*
+Sequential Convex Programming
+- short summary: iterativelly convexify and optimize
+- convexify dynamics (f_{r}) and collisions (c_{ij})
+- L1 penalty cost function:
+[[file:l1penalti.png]]
+| Original Problem | Approx. Problem         |
+| Before           | After                   |
+| [[file:mrtp.png]]    | [[file:approx_problem.png]] |
+| Solved once      | Iteratively solved      |
+| Slow             | Fast                    |
+
+* How to address this issues?
+*2. Collision Constraints*
+
+L2-norm between each robot xy
+
+* How to address this issues?
+*2. Collision Constraints*
+
+L2-norm between each robot xy
+Change q_{j} is fixed (all other robots)
+#+ATTR_HTML: :width 400
+[[file:l2norm.png]]
+* How to address this issues?
+*2. Collision Constraints*
+
+L2-norm between each robot xy
+Change q_{j} is fixed (all other robots)
+#+ATTR_HTML: :width 400
+[[file:l2norm.png]]
+Cost Function
+| Before             | After               |
+| [[file:l1penalti.png]] | [[file:robot_cost.png]] |
+| All robots         | Single Robot        |
+| Coupled            | Parallel            |
+
+* How to address this issues?
+*2. Collision Constraints*
+
+*Missing Piece*
+These C_{ij} are pair wise and need to converge
+
+* How to address this issues?
+*2. Collision Constraints*
+
+Consensus Optimization (Proximal Method)
+- Introduce consensus vars z_{r} and penalty /λ/
+- Penalize for non-consensus
+[[file:consensus_cost.png]]
+
+* How to address this issues?
+*2. Collision Constraints*
+
+Consensus Optimization (Proximal Method)
+- Introduce consensus vars z_{r} and penalty /λ/
+- Penalize for non-consensus
+[[file:consensus_cost.png]]
+| Before                  | After                        |
+| [[file:approx_problem.png]] | [[file:consensus_prob.png]]      |
+| All robots              | Single robot (parallel)      |
+| Iteratively             | Iteratively                  |
+| Optimize + Convexify    | Optimize + Convexity + Share |
+* Toy Example
+Problem with 5 Robots
+Solution at each iteration
+[[file:transition.webm][video]]
+* Demo
+#+ATTR_HTLM: :width 250
+[[file:problem.png]]
 
 #+begin_src shell
 cd ../examples/
@@ -29,53 +157,7 @@ mpirun -np 6 --use-hwthread-cpus --oversubscribe ./distributed_scp square_sided_
 cd ..
 #+end_src
 
-*** Overall
-*Problem*
-1. RobotsTr
-   a) complex dynamics (/F/) 💀
-   b) geometric shapes
-2. Minimize cost (/f_0/)
-3. Start and end configuration (/x_start/ , /x_goal/)
-4. No collision environment (/H/)
-5. No collision between robots (/C/) 💀
-*Solution*
-- Control sequence (/u/)
-[[file:mrtp.png]]
-* Why is this Difficult!
-1. Complex dynamics (/F/) 💀
-2. No collision between robots (/C/) 💀
-* Why is this Difficult!
-1. Complex dynamics (/F/) 💀
-   - Compute KKT conditions (optimality) - not trivial *[Optimizie* ➡ *Discretize]*
-   *OR*
-   - Transcription from continuous to discrete time into NLP *[Discretize* ➡ Opitmize]
+#+RESULTS:
 
-   *Both*  are Non-convex [Pfaffian constraints]
-2. No collision between robots (/C/) 💀
-* Why is this Difficult!
-1. Complex dynamics (/F/) 💀
-   - Compute KKT conditions (optimality) - not trivial *[Optimizie* ➡ *Discretize]*
-   *OR*
-   - Transcription from continuous to discrete time into NLP *[Discretize* ➡ Opitmize]
-
-   *Both*  are Non-convex [Pfaffian constraints]
-2. No collision between robots (/C/) 💀
-   - Couples robots's decision variables
-* How to address this issues?
-** Complex dynamics
-Sequential Convex Programming
-- short summary: iteratively convexify and optimize
-- convexify dynamics (/f_r/) and collisions (/c_ij/)
-- L1 penalti cost function:
-
-[[file:l1penalti.png]]
-
-#+ATTR_HTML: :width 100
-| Original Problem | Approx. Problem         |
-| Before           | After                   |
-| [[file:mrtp.png]]    | [[file:approx_problem.png]] |
-| Solved once      | Iteratively solved      |
-| Slow             | Fast                    |
-** Collisions
-
-* Solution
+* The End
+ Thank You! 🐂
