@@ -2,6 +2,8 @@
 set( L_EXE "")
 add_executable(3robots 3robots.cpp)
 list(APPEND L_EXE 3robots)
+add_executable(testing testing.cpp)
+list(APPEND L_EXE testing)
 
 
 FOREACH(EXE_NAME IN LISTS L_EXE)

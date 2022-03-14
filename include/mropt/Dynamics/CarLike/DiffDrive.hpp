@@ -6,6 +6,7 @@
 #include "mropt/StateSpace/SE2/SE2.hpp"
 #include "mropt/ControlSpace/R2/VW.hpp"
 #include "mropt/RobotShape/CircleRobot.h"
+
 namespace mropt::Dynamics::CarLike {
 class DiffDrive : public ode {
 private:

@@ -63,9 +63,9 @@ void DecoupledProblem::setup() {
         return result;
     };
 
+
     //Solve with no collision constraints between robots
     robot->scp_d_nocol();
-
 
     // 2 - Synchronize
     robot->data_shared->sync(robot);
@@ -81,7 +81,6 @@ void DecoupledProblem::setup() {
     //Share trajectories between robots
     robot->data_shared->init_sync(robot);
     robot->collisions_d->setup(R, N, robot);
-
     robot->J_model =
             robot->J_model +
             robot->collisions_d->get_augmented_lagrangian() +
@@ -154,7 +153,6 @@ void DecoupledProblem::solve() {
 
     reset();
     setup();
-
     MPI_Barrier(MPI_COMM_WORLD); //sync point
     setup_time += MPI_Wtime();
     record_curr.t_setup = setup_time;

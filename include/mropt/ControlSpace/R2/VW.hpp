@@ -9,7 +9,6 @@ namespace mropt::ControlSpace {
 class VW : public Control {
 private:
   casadi::Slice all{};
-
   double w_u_v = 100;
   double w_u_w = 100;//200
   double u_v_std = 0.4;
@@ -17,14 +16,11 @@ private:
   double bound_u_v = 1.0;
   double bound_u_w = 2.0;
 public:
-  std::shared_ptr<Control> clone() const override;
-public:
   VW() : Control() {
     nu_ = 2;
     lb_ = {-bound_u_v, -bound_u_w};
     ub_ = {bound_u_v, bound_u_w};
   }
-  int nu() override { return nu_; }
 
   casadi::MX v() { return U_(0, all); };
   casadi::MX w() { return U_(1, all); };
@@ -48,6 +44,7 @@ public:
     u_w_std = vars_std[1];
     return *this;
   }
+  std::shared_ptr<Control> clone() const override;
   ~VW();
 };
 }

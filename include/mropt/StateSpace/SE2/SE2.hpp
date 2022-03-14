@@ -17,11 +17,10 @@ private:
   double o_std = 0.0;
 
 public:
-  std::shared_ptr<State> clone() const override;
 
   SE2() : State() { nx_ = 3; }
 
-  int nx() override { return nx_; }
+  //int nx() override { return nx_; }
   casadi::MX x() { return X_(0, all); };
   casadi::MX y() { return X_(1, all); };
   casadi::MX o() { return X_(2, all); };
@@ -40,7 +39,8 @@ public:
     return SX::vertcat({x_std, y_std, o_std});
   }
 
-  SE2 &set_weights_std_values(std::vector<double> weight, std::vector<double> vars_std) override {
+  std::shared_ptr<State> clone() const override;
+/*  SE2 &set_weights_std_values(std::vector<double> weight, std::vector<double> vars_std) override {
     w_x = weight[(int) POS::x];
     w_y = weight[(int) POS::y];
     w_o = weight[(int) POS::o];
@@ -48,7 +48,7 @@ public:
     y_std = vars_std[(int) POS::y];
     o_std = vars_std[(int) POS::o];
     return *this;
-  }
+  }*/
 
   virtual ~SE2();
 };

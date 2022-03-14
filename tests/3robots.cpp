@@ -2,7 +2,7 @@
 // Created by ohmy on 2022-02-22.
 //
 #include <mropt/mropt.h>
-#include <mropt/Problem/BuilderDistributedRobot_Dubins.h>
+#include "mropt/Robot/BuilderDistributedRobot_Dubins.h"
 
 int main(int argc, char **argv) {
 
@@ -45,12 +45,10 @@ int main(int argc, char **argv) {
     if (size != R) {
         std::cerr << "Decoupled case must have R mpi thread!" << std::endl;
     }
-
     // 2 - Build a Robot
-    mropt::Problem::BuilderDistributedRobot_Dubins builder_dubins_car;
+    mropt::Problem::BuilderDistributedRobot_Dubins builder_dubins_car(L[r]);
     auto params = mropt::Problem::Robot::Params{0.0, T, N};
-    auto sa = new ShapeArgs_type(); sa->L = L[r];
-    builder_dubins_car.make_robot(r, sa, params);
+    builder_dubins_car.make_robot(r, params);
     auto robot_d = builder_dubins_car.getDistributedRobot();
     // 3.2 - Assign missions to the robots
     robot_d->addMission(start[r], goal[r], {});

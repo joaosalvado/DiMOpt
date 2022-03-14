@@ -29,7 +29,7 @@ public:
   }
 
   casadi::MX U() { return U_; };
-  virtual int nu() = 0;
+  int nu() { return nu_; }
   int Nu() { return Nu_; };
   virtual casadi::SX U_ode() = 0;
   //virtual casadi::MX gU() = 0;

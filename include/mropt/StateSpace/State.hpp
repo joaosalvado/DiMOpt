@@ -35,7 +35,7 @@ public:
   }
 
   casadi::MX X() { return X_; };
-  virtual int nx() = 0;
+  int nx() {return nx_;}
   int Nx() { return Nx_; };
   virtual casadi::SX X_ode() = 0;
   virtual casadi::SX XY_ode() = 0;
@@ -44,7 +44,7 @@ public:
 
   virtual casadi::SX get_weights() const = 0;
   virtual casadi::SX get_std_values() const = 0;
-  virtual State &set_weights_std_values(std::vector<double> weight, std::vector<double> vars_std) = 0;
+  //virtual State &set_weights_std_values(std::vector<double> weight, std::vector<double> vars_std) = 0;
 
   virtual casadi::MX xy() = 0;
   virtual casadi::MX x() = 0;
