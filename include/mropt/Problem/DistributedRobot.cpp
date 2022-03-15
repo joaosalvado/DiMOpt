@@ -152,6 +152,17 @@ void DistributedRobot::scp_d() {
     mu_d_0 = mu_d_0_init;
     mu_f_0 = mu_f_0_init;
     mu_c_0 = mu_c_0_init;
+
+    // For trajectory plot
+    // Gather states
+    auto x_raw = std::vector<double>(solution->value(ss->X()));
+    xall_sol.clear();
+    for (int x_id = 0; x_id < ss->nx(); ++x_id) {
+        xall_sol.emplace_back(std::vector<double>());
+        for (int k_x = 0; k_x < ss->Nx(); ++k_x) {
+            xall_sol[x_id].push_back(x_raw[x_id + k_x * ss->nx()]);
+        }
+    }
     // Store the controls that are not in shared data unless we allow plotting
     auto u_raw = std::vector<double>(solution->value(cs->U()));
     u_sol.clear();
@@ -248,6 +259,17 @@ double DistributedRobot::compute_robot_costs_violations_d() {
         x_sol_i.push_back(x_sol);
         y_sol_i.push_back(y_sol);
         o_sol_i.push_back(o_sol);
+        // For trajectory plot
+        // Gather states
+        auto x_raw = std::vector<double>(solution->value(ss->X()));
+        xall_sol.clear();
+        for (int x_id = 0; x_id < ss->nx(); ++x_id) {
+            xall_sol.emplace_back(std::vector<double>());
+            for (int k_x = 0; k_x < ss->Nx(); ++k_x) {
+                xall_sol[x_id].push_back(x_raw[x_id + k_x * ss->nx()]);
+            }
+        }
+        // Gather Controls
         auto u_raw = std::vector<double>(solution->value(cs->U()));
         u_sol.clear();
         for (int u_id = 0; u_id < cs->nu(); ++u_id) {
@@ -451,7 +473,16 @@ void DistributedRobot::scp_d_nocol() {
     ocp_->set_value(mu_free, mu_f_0_init);
     mu_d_0 = mu_d_0_init;
     mu_f_0 = mu_f_0_init;
-
+    // For trajectory plot
+    // Gather states
+    auto x_raw = std::vector<double>(solution->value(ss->X()));
+    xall_sol.clear();
+    for (int x_id = 0; x_id < ss->nx(); ++x_id) {
+        xall_sol.emplace_back(std::vector<double>());
+        for (int k_x = 0; k_x < ss->Nx(); ++k_x) {
+            xall_sol[x_id].push_back(x_raw[x_id + k_x * ss->nx()]);
+        }
+    }
     //Get u for solution trajectory
     auto u_raw = std::vector<double>(solution->value(cs->U()));
     u_sol.clear();
@@ -531,6 +562,17 @@ double DistributedRobot::compute_robot_costs_violations_d_nocol() {
         x_sol_i.push_back(x_sol);
         y_sol_i.push_back(y_sol);
         o_sol_i.push_back(o_sol);
+        // For trajectory plot
+        // Gather states
+        auto x_raw = std::vector<double>(solution->value(ss->X()));
+        xall_sol.clear();
+        for (int x_id = 0; x_id < ss->nx(); ++x_id) {
+            xall_sol.emplace_back(std::vector<double>());
+            for (int k_x = 0; k_x < ss->Nx(); ++k_x) {
+                xall_sol[x_id].push_back(x_raw[x_id + k_x * ss->nx()]);
+            }
+        }
+        // Gather controls
         auto u_raw = std::vector<double>(solution->value(cs->U()));
         u_sol.clear();
         for (int u_id = 0; u_id < cs->nu(); ++u_id) {

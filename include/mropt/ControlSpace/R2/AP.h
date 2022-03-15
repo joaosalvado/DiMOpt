@@ -29,8 +29,8 @@ namespace mropt::ControlSpace {
         casadi::MX p() { return U_(1, all); };
 
         //Symbolic Vars - to be used in ODE's
-        casadi::SX a_ode{SX::sym("v")};
-        casadi::SX p_ode{SX::sym("w")};
+        casadi::SX a_ode{SX::sym("a")};
+        casadi::SX p_ode{SX::sym("p")};
         casadi::SX U_ode() override { return casadi::SX::vertcat({a_ode, p_ode}); };
 
         casadi::SX get_weights() const override {

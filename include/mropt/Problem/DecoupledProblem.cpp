@@ -135,13 +135,14 @@ DecoupledProblem &DecoupledProblem::plot_trajectories(
         plotter->set_models(odes);
     }
 
-    std::vector<std::vector<double>> x;
+    /*std::vector<std::vector<double>> x;
     std::vector<std::vector<double>> y;
-    std::vector<std::vector<double>> o;
+    std::vector<std::vector<double>> o;*/
+    std::vector<std::vector<std::vector<double>>> x;
     std::vector<std::vector<std::vector<double>>> u;
-    robot->data_shared->getMRTrajectory(x, y, o, u, robot);
+    robot->data_shared->getMRTrajectory(x, u, robot);
     if (robot->robot_id == 0) {
-        plotter->plot_trajectory(x, y, o, u, robot->p_.tf);
+        plotter->plot_trajectory(x, u, robot->p_.tf);
     }
     return *this;
 }

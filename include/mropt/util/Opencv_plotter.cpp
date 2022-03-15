@@ -5,8 +5,8 @@
 
 using namespace cv;
 using namespace mropt::util;
-void Opencv_plotter::addLine(Mat img, Point start, Point end)
-{
+
+void Opencv_plotter::addLine(Mat img, Point start, Point end) {
     int thickness = 2;
     int lineType = LINE_8;
     line(img,
@@ -17,8 +17,7 @@ void Opencv_plotter::addLine(Mat img, Point start, Point end)
          lineType);
 }
 
-void Opencv_plotter::addFilledCircle(Mat img, Point center, int r_id)
-{
+void Opencv_plotter::addFilledCircle(Mat img, Point center, int r_id) {
     circle(img,
            center,
            length_px_[r_id] / 2,
@@ -27,16 +26,14 @@ void Opencv_plotter::addFilledCircle(Mat img, Point center, int r_id)
            LINE_8);
 }
 
-void Opencv_plotter::addRectangle(Mat img, Point corner1, Point corner2)
-{
+void Opencv_plotter::addRectangle(Mat img, Point corner1, Point corner2) {
     cv::rectangle(img,
                   corner1,
                   corner2,
                   Scalar(100, 100, 50));
 }
 
-void Opencv_plotter::fillRectangle(Mat img, Point corner1, Point corner2)
-{
+void Opencv_plotter::fillRectangle(Mat img, Point corner1, Point corner2) {
     cv::rectangle(img,
                   corner1,
                   corner2,
@@ -44,8 +41,7 @@ void Opencv_plotter::fillRectangle(Mat img, Point corner1, Point corner2)
                   -1);
 }
 
-void Opencv_plotter::whiteRectangle(Mat img, Point corner1, Point corner2)
-{
+void Opencv_plotter::whiteRectangle(Mat img, Point corner1, Point corner2) {
     cv::rectangle(img,
                   corner1,
                   corner2,
@@ -53,16 +49,14 @@ void Opencv_plotter::whiteRectangle(Mat img, Point corner1, Point corner2)
                   -1);
 }
 
-void Opencv_plotter::blueRectangle(Mat img, Point corner1, Point corner2)
-{
+void Opencv_plotter::blueRectangle(Mat img, Point corner1, Point corner2) {
     cv::rectangle(img,
                   corner1,
                   corner2,
                   Scalar(30, 210, 100));
 }
 
-void Opencv_plotter::addConvexPolygon(Mat img, const Point *points, int n_pts)
-{
+void Opencv_plotter::addConvexPolygon(Mat img, const Point *points, int n_pts) {
     fillPoly(img,
              &points,
              &n_pts,
@@ -78,8 +72,7 @@ void Opencv_plotter::addConvexPolygon(Mat img, const Point *points, int n_pts)
               Scalar(240, 50, 100));
 }
 
-void Opencv_plotter::fillPolygonBlack(Mat img, const Point *points, int n_pts)
-{
+void Opencv_plotter::fillPolygonBlack(Mat img, const Point *points, int n_pts) {
     fillPoly(img,
              &points,
              &n_pts,
@@ -92,14 +85,12 @@ void Opencv_plotter::createRectangle(
         const Point2d &center,
         int pos_x, int neg_x,
         int pos_y, int neg_y,
-        std::shared_ptr<Rectangle> &rect)
-{
+        std::shared_ptr<Rectangle> &rect) {
     rect->left_bottom_corner = Point2d(center.x - neg_x, center.y - neg_y);
     rect->right_upper_corner = Point2d(center.x + pos_x, center.y + pos_y);
 }
 
-void Opencv_plotter::rectangleAngle(Mat img, int x0, int y0, int width, int height, double angle)
-{
+void Opencv_plotter::rectangleAngle(Mat img, int x0, int y0, int width, int height, double angle) {
     auto _angle = angle * M_PI / 180.0;
 
     double b = std::cos(_angle) * 0.5;
@@ -117,17 +108,14 @@ void Opencv_plotter::rectangleAngle(Mat img, int x0, int y0, int width, int heig
     line(img, pt3, pt0, (255, 255, 255), 2);
 }
 
-void Opencv_plotter::setFootprint(std::vector<double> length, std::vector<double> width)
-{
-    for (int r_id = 0; r_id < R; r_id++)
-    {
+void Opencv_plotter::setFootprint(std::vector<double> length, std::vector<double> width) {
+    for (int r_id = 0; r_id < R; r_id++) {
         this->length_px_[r_id] = length[r_id] * resolution; //TODO resolution 10 et this from somewhere
         this->width_px_[r_id] = width[r_id] * resolution;   //TODO resolution 10 et this from somewhere
     }
 }
 
-double Opencv_plotter::area(const Rectangle &rect)
-{
+double Opencv_plotter::area(const Rectangle &rect) {
     return (rect.left_bottom_corner.x - rect.right_upper_corner.x) *
            (rect.left_bottom_corner.x - rect.right_upper_corner.x) +
            (rect.left_bottom_corner.y - rect.right_upper_corner.y) *
@@ -138,8 +126,7 @@ double Opencv_plotter::area(const Rectangle &rect)
 void Opencv_plotter::plot_diffdrive_robot(
         double x_px, double y_px, double o,
         int r_id, double length_px,
-        Mat &color_img_)
-{
+        Mat &color_img_) {
     cv::Mat overlay;
     double alpha = 0.3;
     color_img_.copyTo(overlay);
@@ -203,52 +190,53 @@ void Opencv_plotter::plot_trajectory(
         std::vector<std::vector<double>> y,
         std::vector<std::vector<double>> o,
         std::vector<std::vector<std::vector<double>>> u,
-        std::vector<double> time)  {
-    plot_trajectory(x,y,o,u, time[0]);//TODO: it is not working under this roboots are slow and stuck, this works if all time vector is equal
+        std::vector<double> time) {
+    plot_trajectory({x, y, o}, u,
+                    time[0]);//TODO: it is not working under this roboots are slow and stuck, this works if all time vector is equal
     return;
     // 0 - Setup
-    auto N = std::vector<int>(R,0);
-    auto k = std::vector<int>(R,0);
-    auto dt_curr = std::vector<double>(R,0);
-    auto dt = std::vector<double>(R,0);
+    auto N = std::vector<int>(R, 0);
+    auto k = std::vector<int>(R, 0);
+    auto dt_curr = std::vector<double>(R, 0);
+    auto dt = std::vector<double>(R, 0);
     int robots_finished = 0;
 
-    std::vector<std::chrono::high_resolution_clock::time_point > start
-            =  std::vector<std::chrono::high_resolution_clock::time_point>(R);
-    std::chrono::high_resolution_clock::time_point  end;
+    std::vector<std::chrono::high_resolution_clock::time_point> start
+            = std::vector<std::chrono::high_resolution_clock::time_point>(R);
+    std::chrono::high_resolution_clock::time_point end;
     for (int r = 0; r < R; r++) {
         N[r] = x[r].size();
         k[r] = 0;
-        dt[r] = time[r]/N[r];
+        dt[r] = time[r] / N[r];
         dt_curr[r] = 0;
         start[r] = std::chrono::high_resolution_clock::now();
     }
 
-    while(robots_finished != R) {
+    while (robots_finished != R) {
         for (int r = 0; r < R; r++) {
-            if(k[r] == N[r]-1){//standstill
+            if (k[r] == N[r] - 1) {//standstill
                 //plot_robot[r](x[r][N[r]], y[r][N[r]], o[r][N[r]]);
             } else {
                 DM ur = DM({u[r]});
                 DM X_sol = rk4_num(odes[r]->f(), DM(dt_curr[r]), DM{x[r][k[r]], y[r][k[r]], o[r][k[r]]}, ur(all, k[r]));
-                plot_robot[r](x[r][k[r]] + X_sol(0).scalar(),
+                plot_robot[r]({x[r][k[r]] + X_sol(0).scalar(),
                               y[r][k[r]] + X_sol(1).scalar(),
-                              o[r][k[r]] + X_sol(2).scalar());
+                              o[r][k[r]] + X_sol(2).scalar()});
             }
         }
         end = std::chrono::high_resolution_clock::now();
 
 
-        for(int r = 0; r < R; r++){
-            if(k[r] == N[r]-1) continue;
+        for (int r = 0; r < R; r++) {
+            if (k[r] == N[r] - 1) continue;
             //dt_curr[r] = (double(end - start[r]) / (double) CLOCKS_PER_SEC);
-            auto dt_curr_d = end-start[r];
-            dt_curr[r] =(double) dt_curr_d.count()/1000000000;
-            if(dt_curr[r] > dt[r]){//Finished a discrete step
+            auto dt_curr_d = end - start[r];
+            dt_curr[r] = (double) dt_curr_d.count() / 1000000000;
+            if (dt_curr[r] > dt[r]) {//Finished a discrete step
                 k[r]++;
                 dt_curr[r] = 0;
-                start[r] =  std::chrono::high_resolution_clock::now();
-                if(k[r] == N[r]-1) robots_finished++;
+                start[r] = std::chrono::high_resolution_clock::now();
+                if (k[r] == N[r] - 1) robots_finished++;
             }
         }
         imshow("Trajectory", color_img);
@@ -256,4 +244,45 @@ void Opencv_plotter::plot_trajectory(
     }
     waitKey();
 }
+
+
+void Opencv_plotter::plot_trajectory(
+        std::vector<std::vector<std::vector<double>>> x,
+        std::vector<std::vector<std::vector<double>>> u,
+        double time) {
+    auto N = x[0][0].size();
+    double dt = time / N;
+    for (int k = 0; k < N - 1; ++k) {
+//clock_t start, end;
+        double dt_curr = 0;
+        auto start = std::chrono::high_resolution_clock::now();//clock();
+        do {
+
+            for (int r = 0; r < R; r++) {
+                DM ur = DM({u[r]});
+                DM xr = DM({x[r]});
+                DM X_sol = rk4_num(odes[r]->f(), DM(dt_curr), xr(all, k), ur(all, k));
+                std::vector<double> xall;
+                for(int x_i = 0 ; x_i < xr.size1(); ++x_i){
+                    xall.push_back(xr(x_i, k).scalar() + X_sol(x_i).scalar());
+                }
+                plot_robot[r](xall);
+            }
+            auto end = std::chrono::high_resolution_clock::now();
+            imshow("Trajectory", color_img);
+//dt_curr = (double(end - start) / (double) CLOCKS_PER_SEC);
+            auto dt_curr_d = end - start;
+            dt_curr = (double) dt_curr_d.count() / 1000000000;
+            waitKey(1);
+
+        } while (dt_curr < dt);
+//waitKey();
+    }
+    waitKey();
+
+// Clear trajectories
+    color_img = Scalar(255, 255, 255);
+
+}
+
 

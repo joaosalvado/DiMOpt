@@ -20,7 +20,7 @@ namespace mropt::StateSpace {
         double x_std = 0.0;
         double y_std = 0.0;
         double o_std = 0.0;
-        double v_std = 0.0;
+        double v_std = 0.5;
         double p_std = 0.0;
     public:
         SE2CU() : State() { nx_ = 5; }

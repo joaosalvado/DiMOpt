@@ -166,7 +166,7 @@ protected:
   std::vector<double> free_space_violation_vec{};
   std::vector<double> collisions_violation_vec{};
   std::vector<double> x_sol, y_sol, o_sol;
-  std::vector<std::vector<double>> u_sol;
+  std::vector<std::vector<double>> u_sol, xall_sol;
   std::vector<std::vector<double>> x_sol_i, y_sol_i, o_sol_i;
   void clear_plot_vars();
 

@@ -564,7 +564,7 @@ CoupledProblem& CoupledProblem::plot_trajectories() {
         robot->get_solution(x_r,y_r,o_r, u_r);
         x.emplace_back(x_r); y.emplace_back(y_r); o.emplace_back(o_r); u.push_back(u_r);
     }
-    plotter->plot_trajectory(x, y, o, u, robots[0]->p_.tf);
+    plotter->plot_trajectory({x, y, o}, u, robots[0]->p_.tf);
     return *this;
 }
 

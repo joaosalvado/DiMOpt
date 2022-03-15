@@ -6,6 +6,8 @@
 #include <functional>
 #include "integration.hpp"
 #include "mropt/Dynamics/ode.hpp"
+#include "mropt/RobotShape/Footprint.h"
+#include "mropt/StateSpace/State.hpp"
 
 // class forward
 namespace mropt::Problem{
@@ -16,7 +18,8 @@ namespace mropt::Problem{
 namespace mropt::util {
 class Plotter {
 protected:
-  std::vector<std::function<void(double, double, double)>> plot_robot;
+  std::vector<std::shared_ptr<mropt::RobotShape::Footprint>> shape;
+  std::vector<std::function<void( std::vector<double> )>> plot_robot;
   std::function<DM(const Function &, const DM &, const DM &, const DM &)> integrator;
   std::vector<std::shared_ptr<mropt::Dynamics::ode>> odes;
   int R{0};
@@ -32,12 +35,17 @@ public:
     R = odes.size();
   }
 
-  virtual void plot_trajectory(
+/*  virtual void plot_trajectory(
       std::vector<std::vector<double>> x,
       std::vector<std::vector<double>> y,
       std::vector<std::vector<double>> o,
       std::vector<std::vector<std::vector<double>>> u,
-      double time) = 0;
+      double time) = 0;*/
+
+  virtual void plot_trajectory(
+            std::vector<std::vector<std::vector<double>>> x,
+            std::vector<std::vector<std::vector<double>>> u,
+            double time) = 0;
 
   void plot_swath(
           std::vector<std::vector<double>> x,

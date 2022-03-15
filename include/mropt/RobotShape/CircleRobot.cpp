@@ -3,6 +3,7 @@
 //
 
 #include <memory>
+#include <functional>
 #include "CircleRobot.h"
 
 using namespace mropt::RobotShape;
@@ -17,3 +18,5 @@ double* CircleRobot::get_safety_radius_ptr() {
 std::shared_ptr <Footprint> CircleRobot::clone() const {
   return std::make_shared<CircleRobot>(*this);
 }
+
+

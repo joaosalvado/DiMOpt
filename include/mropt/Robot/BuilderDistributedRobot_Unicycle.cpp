@@ -28,3 +28,12 @@ BuilderDistributedRobot_Unicycle::build_ode(
     auto cr = std::dynamic_pointer_cast<mropt::RobotShape::CircleRobot>(shape);
     return std::make_shared<mropt::Dynamics::CarLike::Unicycle>(ap, se2cu, cr);
 }
+
+std::shared_ptr<mropt::StateSpace::State>
+        BuilderDistributedRobot_Unicycle::build_state_space(){
+    return std::make_shared<mropt::StateSpace::SE2CU>();
+}
+std::shared_ptr<mropt::ControlSpace::Control>
+        BuilderDistributedRobot_Unicycle::build_control_space(){
+    return std::make_shared<mropt::ControlSpace::AP>();
+}

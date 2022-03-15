@@ -49,7 +49,7 @@ public:
         width_px_(std::vector<int>(R_)) {
 
     for (int r_id = 0; r_id < R; ++r_id) {
-      plot_robot.emplace_back([&, r_id](double x, double y, double o) { return plot_diffdrive_robot(x, y, o, r_id); });
+      plot_robot.emplace_back([&, r_id](std::vector<double> xall) { return plot_diffdrive_robot(xall, r_id); });
     }
   }
   virtual ~Opencv_plotter() {};
@@ -86,7 +86,7 @@ public:
       std::vector<std::vector<double>> o,
       std::vector<std::vector<std::vector<double>>> u,
       std::vector<double> time) ;
-  void plot_trajectory(
+  /*void plot_trajectory(
       std::vector<std::vector<double>> x,
       std::vector<std::vector<double>> y,
       std::vector<std::vector<double>> o,
@@ -103,7 +103,7 @@ public:
         for (int r = 0; r < R; r++) {
           DM ur = DM({u[r]});
           DM X_sol = rk4_num(odes[r]->f(), DM(dt_curr), DM{x[r][k], y[r][k], o[r][k]}, ur(all, k));
-          plot_robot[r](x[r][k] + X_sol(0).scalar(), y[r][k] + X_sol(1).scalar(), o[r][k] + X_sol(2).scalar());
+          plot_robot[r]({x[r][k] + X_sol(0).scalar(), y[r][k] + X_sol(1).scalar(), o[r][k] + X_sol(2).scalar()});
         }
         auto end = std::chrono::high_resolution_clock::now();
         imshow("Trajectory", color_img);
@@ -119,9 +119,17 @@ public:
 
     // Clear trajectories
     color_img = Scalar(255,255,255); //cv::Mat::zeros(color_img.rows, color_img.cols, color_img.type());
-  }
+  }*/
 
-  void plot_diffdrive_robot(double x, double y, double o, int r_id) {
+    void plot_trajectory(
+            std::vector<std::vector<std::vector<double>>> x,
+            std::vector<std::vector<std::vector<double>>> u,
+            double time) override;
+
+  void plot_diffdrive_robot(std::vector<double> xall,  int r_id) {
+      double x = xall[0];
+      double y = xall[1];
+      double o = xall[2];
     auto length_px = length_px_[r_id];
     auto x_px = x * resolution;
     auto y_px = y * resolution;

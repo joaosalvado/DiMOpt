@@ -124,6 +124,10 @@ namespace mropt::Problem {
                 std::vector<std::vector<double>> &o,
                 std::vector<std::vector<std::vector<double>>> &u,
                 const std::shared_ptr<DistributedRobot> &robot);
+        void getMRTrajectory(
+                std::vector<std::vector<std::vector<double>>> &x,
+                std::vector<std::vector<std::vector<double>>> &u,
+                const std::shared_ptr<DistributedRobot> &robot);
 
         void plot(
                 std::shared_ptr<DistributedRobot> &robot,

@@ -12,7 +12,9 @@ namespace mropt::Problem {
     class BuilderDistributedRobot_Unicycle : public BuilderDistributedRobot{
         double L;
     public:
-        BuilderDistributedRobot_Unicycle(double L) : BuilderDistributedRobot(), L(L){}
+        BuilderDistributedRobot_Unicycle(double L) : BuilderDistributedRobot(){
+            this->L = L;
+        }
         virtual ~BuilderDistributedRobot_Unicycle() = default;
         std::function<std::shared_ptr<mropt::RobotShape::Footprint>()>  create_shape_builder() override;
         std::shared_ptr<mropt::Dynamics::ode> build_ode(
@@ -20,6 +22,9 @@ namespace mropt::Problem {
                 const std::shared_ptr<mropt::ControlSpace::Control>& cs,
                 const std::shared_ptr<mropt::RobotShape::Footprint>& shape
         ) override;
+
+        std::shared_ptr<mropt::StateSpace::State> build_state_space() override;
+        std::shared_ptr<mropt::ControlSpace::Control> build_control_space() override;
     };
 
 }

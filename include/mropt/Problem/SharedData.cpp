@@ -647,12 +647,54 @@ void SharedData::getMRTrajectory(
         u_mr_i, robot->cs->Nu(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     for (int r = 0; r < R; ++r) {
-      //auto u_r_i = std::vector<double>(robot->cs->Nu());
       for (int k = 0; k < robot->cs->Nu(); ++k) {
-        //u_r_i.push_back(u_mr_i[k + r * (robot->cs->Nu())]);
         u[r][u_id][k] = u_mr_i[k + r * (robot->cs->Nu())];
       }
     }
     delete[] u_mr_i;
   }
+}
+
+
+void SharedData::getMRTrajectory(
+        std::vector<std::vector<std::vector<double>>> &x,
+        std::vector<std::vector<std::vector<double>>> &u,
+        const std::shared_ptr<DistributedRobot> & robot){
+    // States
+    x = std::vector<std::vector<std::vector<double>>>(R,
+                                                      std::vector<std::vector<double>>( robot->ss->nx(),
+                                                                                        std::vector<double>(robot->ss->Nx())));
+    for (int x_id = 0; x_id < robot->ss->nx(); ++x_id) {
+
+        auto *x_mr_i = new double[R * (robot->ss->Nx())];
+        MPI_Gather(
+                robot->xall_sol[x_id].data(),  robot->ss->Nx() , MPI_DOUBLE,
+                x_mr_i, robot->ss->Nx(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+        for (int r = 0; r < R; ++r) {
+            for (int k = 0; k < robot->ss->Nx(); ++k) {
+                x[r][x_id][k] = x_mr_i[k + r * (robot->ss->Nx())];
+            }
+        }
+        delete[] x_mr_i;
+    }
+
+    // Controls
+    u = std::vector<std::vector<std::vector<double>>>(R,
+                                                      std::vector<std::vector<double>>( robot->cs->nu(),
+                                                                                        std::vector<double>(robot->cs->Nu())));
+    for (int u_id = 0; u_id < robot->cs->nu(); ++u_id) {
+
+        auto *u_mr_i = new double[R * (robot->cs->Nu())];
+        MPI_Gather(
+                robot->u_sol[u_id].data(),  robot->cs->Nu() , MPI_DOUBLE,
+                u_mr_i, robot->cs->Nu(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+        for (int r = 0; r < R; ++r) {
+            for (int k = 0; k < robot->cs->Nu(); ++k) {
+                u[r][u_id][k] = u_mr_i[k + r * (robot->cs->Nu())];
+            }
+        }
+        delete[] u_mr_i;
+    }
 }

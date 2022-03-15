@@ -22,8 +22,10 @@ int main(int argc, char **argv) {
     std::string map_file = "0.5pol.png";
 
     // 1 - Mission
-    int N = 40;
-    double T = 7;
+    int N = 50;
+    double T = 10;
+
+/*
     // 1.1) Starting Configuration (x, y, theta) for 3 robots
     std::vector<std::vector<double>> start =
             {
@@ -43,6 +45,24 @@ int main(int argc, char **argv) {
                              0.6,
                              1.3};
     std::vector<double> W = {1, 0.6, 1.3};
+*/
+
+    // 1.1) Starting Configuration (x, y, theta) for 3 robots
+    std::vector<std::vector<double>> start =
+            {
+                    {1, 1, 0.5 * M_PI},
+                    {1, 4, 0}
+            };
+    // 1.2) Goal Configuration (x,y, theta) for 3 robot
+    std::vector<std::vector<double>> goal =
+            {
+                    {2, 2.5, 0},
+                    {4, 1,   0}
+            };
+    // 1.3) Length and Width
+    std::vector<double> L = {1,0.5};
+    std::vector<double> W = {1, 0.5};
+
 
 
     // Test MPI treads is equal to number of robots
@@ -76,12 +96,14 @@ int main(int argc, char **argv) {
     mrprob_d.debug_mode().allow_plotting();
 
     // 4.2 - Solve
-    try {
+    //try {
         mrprob_d.solve();
         mrprob_d.plot_trajectories(std::vector<std::shared_ptr<mropt::Dynamics::ode>>(R, robot_d->get_ode()));
         MPI_Barrier(MPI_COMM_WORLD);
+/*
     } catch (...) {
         std::exit(1); // terminate with exit code 1 = fail
     }
+*/
 
 }
