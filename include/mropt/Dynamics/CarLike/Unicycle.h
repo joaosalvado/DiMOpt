@@ -23,7 +23,7 @@ namespace mropt::Dynamics::CarLike {
             SX X_dot = SX::vertcat(
                     {se2cu->v_ode * cos(se2cu->o_ode),
                      se2cu->v_ode * sin(se2cu->o_ode),
-                     (1 / L_) * se2cu->v_ode * tan(se2cu->p_ode),
+                     (1 / L_) * se2cu->v_ode * se2cu->p_ode,
                      ap->a_ode,
                      ap->p_ode
                     });

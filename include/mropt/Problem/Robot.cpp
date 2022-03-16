@@ -204,6 +204,10 @@ void Robot::resetQuery(Opti &ocp) {
 
     // Bounds State
     ss->set_bounds(ocp);
+    auto g_x_list = ss->get_constraints();
+    for (auto &g_x: g_x_list) {
+        ocp.subject_to(g_x == 0);
+    }
     // Bounds Control
     cs->set_bounds(ocp);
 
@@ -237,111 +241,20 @@ void Robot::resetQuery(Opti &ocp) {
     ocp.set_value(mu_dynamics, mu_d_0_init);
 }
 
-std::vector<double> LinearSpacedVector(double a, double b, std::size_t N) {
-    double h = (b - a) / static_cast<double>(N - 1);
-    std::vector<double> xs(N);
-    std::vector<double>::iterator x;
-    double val;
-    for (x = xs.begin(), val = a; x != xs.end(); ++x, val += h) {
-        *x = val;
-    }
-    return xs;
-}
+//std::vector<double> LinearSpacedVector(double a, double b, std::size_t N) {
+//    double h = (b - a) / static_cast<double>(N - 1);
+//    std::vector<double> xs(N);
+//    std::vector<double>::iterator x;
+//    double val;
+//    for (x = xs.begin(), val = a; x != xs.end(); ++x, val += h) {
+//        *x = val;
+//    }
+//    return xs;
+//}
 
 void Robot::initial_guess(SingleMission &mission) {
-    std::vector<double> x_init, y_init, o_init;
-    //Note: use mission.pas
-    double x_0{mission.x0[0]}, y_0{mission.x0[1]}, o_0{mission.x0[2]};
-    double x_f{mission.xf[0]}, y_f{mission.xf[1]}, o_f{mission.x0[2]};
-
-    //No assignment
-    if (mission.pas.empty()) {
-        std::vector<double> x_k = LinearSpacedVector(x_0, x_f, p_.N + 1);
-        x_init.insert(x_init.end(), x_k.begin(), x_k.end());
-        std::vector<double> y_k = LinearSpacedVector(y_0, y_f, p_.N + 1);
-        y_init.insert(y_init.end(), y_k.begin(), y_k.end());
-        std::vector<double> o_k = LinearSpacedVector(o_0, o_f, p_.N + 1);
-        o_init.insert(o_init.end(), o_k.begin(), o_k.end());
-    }
-
-    // TODO: uncomment block
-    for (int pa_id = 0; pa_id < mission.pas.size(); ++pa_id) {//List of polygon assignments "pas"
-        const auto &pa = mission.pas[pa_id];
-        if (mission.pas.size() == 1) {//Stays in polygon
-            std::vector<double> x_k = LinearSpacedVector(x_0, x_f, p_.N + 1);
-            x_init.insert(x_init.end(), x_k.begin(), x_k.end());
-            std::vector<double> y_k = LinearSpacedVector(y_0, y_f, p_.N + 1);
-            y_init.insert(y_init.end(), y_k.begin(), y_k.end());
-            std::vector<double> o_k = LinearSpacedVector(o_0, o_f, p_.N + 1);
-            o_init.insert(o_init.end(), o_k.begin(), o_k.end());
-            break;
-        }
-        //Changes Polygons
-        if (pa_id == 0) {//First polygon change
-            const auto &pa_next = mission.pas[pa_id + 1];
-            auto &state = mropt::freespace::FreeSpace::poly_centers->at({pa.pid, pa_next.pid});
-            std::vector<double> x_k = LinearSpacedVector(x_0, state.x, pa.kf - pa.k0 - 1);
-            x_init.insert(x_init.end(), x_k.begin(), x_k.end());
-            std::vector<double> y_k = LinearSpacedVector(y_0, state.y, pa.kf - pa.k0 - 1);
-            y_init.insert(y_init.end(), y_k.begin(), y_k.end());
-            std::vector<double> o_k = LinearSpacedVector(o_0, state.o, pa.kf - pa.k0 - 1);
-            o_init.insert(o_init.end(), o_k.begin(), o_k.end());
-        } else if (pa_id == mission.pas.size() - 1) {// Last polygon change
-            const auto &pa_prev = mission.pas[pa_id - 1];
-            auto &state = mropt::freespace::FreeSpace::poly_centers->at({pa_prev.pid, pa.pid});
-            std::vector<double> x_k = LinearSpacedVector(state.x, x_f, pa.kf - pa.k0);
-            x_init.insert(x_init.end(), x_k.begin(), x_k.end());
-            std::vector<double> y_k = LinearSpacedVector(state.y, y_f, pa.kf - pa.k0);
-            y_init.insert(y_init.end(), y_k.begin(), y_k.end());
-            std::vector<double> o_k = LinearSpacedVector(state.o, o_f, pa.kf - pa.k0);
-            o_init.insert(o_init.end(), o_k.begin(), o_k.end());
-        } else { // In between
-            const auto &pa_prev = mission.pas[pa_id - 1];
-            const auto &state_prev = mropt::freespace::FreeSpace::poly_centers->at({pa_prev.pid, pa.pid});
-            const auto &pa_next = mission.pas[pa_id + 1];
-            const auto &state_next = mropt::freespace::FreeSpace::poly_centers->at({pa.pid, pa_next.pid});
-            std::vector<double> x_k = LinearSpacedVector(state_prev.x, state_next.x, pa.kf - pa.k0);
-            x_init.insert(x_init.end(), x_k.begin(), x_k.end());
-            std::vector<double> y_k = LinearSpacedVector(state_prev.y, state_next.y, pa.kf - pa.k0);
-            y_init.insert(y_init.end(), y_k.begin(), y_k.end());
-            std::vector<double> o_k = LinearSpacedVector(state_prev.o, state_next.o, pa.kf - pa.k0);
-            o_init.insert(o_init.end(), o_k.begin(), o_k.end());
-        }
-    }
-    auto u_v_init = std::vector(p_.N, 0.0);
-    auto u_w_init = std::vector(p_.N, 0.0);
-/*  x_init =  std::vector(p_.N+1, 0.0); //TODO: comment me
-  y_init =  std::vector(p_.N+1, 0.0);
-  o_init =  std::vector(p_.N+1, 0.0);*/
-    //Add Noise
-//  for(auto &x : x_init){ x = x + UniformNoise(-0.1, 0.1);}
-//  for(auto &y : y_init){ y = y + UniformNoise(-0.1, 0.1);}
-//  for(auto &u_v : u_v_init){ u_v = u_v + UniformNoise(-0.01, 0.01);}
-//  for(auto &u_w : u_w_init){ u_w = u_w + UniformNoise(-0.01, 0.01);}
-    X_curr = DM({x_init, y_init, o_init});
-    U_curr = DM({u_v_init, u_w_init});
-
-    // TODO: each state_space and control_space should provide a way to compute this
-    // This is an easy fix for now (so forever)
-    if (X_curr.size1() != ss->nx_) {
-        int n = ss->nx_ - X_curr.size1();
-        while (n--) {
-            auto x_fake = transpose(DM({std::vector(p_.N + 1, 0.0)}));
-            std::cout << x_fake.size1() << std::endl;
-            std::cout << x_fake.size2() << std::endl;
-            X_curr = DM::vertcat({X_curr, x_fake});
-        }
-    }
-
-    if (U_curr.size1() != cs->nu_) {
-        int n = ss->nx_ - U_curr.size1();
-        while (n--) {
-            auto u_fake = transpose(DM({std::vector(p_.N + 1, 0.0)}));
-            std::cout << u_fake.size1() << std::endl;
-            std::cout << u_fake.size2() << std::endl;
-            U_curr = DM::vertcat({U_curr, u_fake});
-        }
-    }
+    this->ss->initial_guess(mission.x0, mission.xf, X_curr);
+    this->cs->initial_guess(mission.x0, mission.xf, U_curr);
 }
 
 void Robot::setupQuery(Opti &ocp) {
@@ -685,3 +598,96 @@ double Robot::UniformNoise(double start, double end) {
 }
 
 
+
+
+//void Robot::initial_guess(SingleMission &mission) {
+//    std::vector<double> x_init, y_init, o_init;
+//    //Note: use mission.pas
+//    double x_0{mission.x0[0]}, y_0{mission.x0[1]}, o_0{mission.x0[2]};
+//    double x_f{mission.xf[0]}, y_f{mission.xf[1]}, o_f{mission.x0[2]};
+//
+//    //No assignment
+//    if (mission.pas.empty()) {
+//        std::vector<double> x_k = LinearSpacedVector(x_0, x_f, p_.N + 1);
+//        x_init.insert(x_init.end(), x_k.begin(), x_k.end());
+//        std::vector<double> y_k = LinearSpacedVector(y_0, y_f, p_.N + 1);
+//        y_init.insert(y_init.end(), y_k.begin(), y_k.end());
+//        std::vector<double> o_k = LinearSpacedVector(o_0, o_f, p_.N + 1);
+//        o_init.insert(o_init.end(), o_k.begin(), o_k.end());
+//    }
+//
+//    // TODO: uncomment block
+//    for (int pa_id = 0; pa_id < mission.pas.size(); ++pa_id) {//List of polygon assignments "pas"
+//        const auto &pa = mission.pas[pa_id];
+//        if (mission.pas.size() == 1) {//Stays in polygon
+//            std::vector<double> x_k = LinearSpacedVector(x_0, x_f, p_.N + 1);
+//            x_init.insert(x_init.end(), x_k.begin(), x_k.end());
+//            std::vector<double> y_k = LinearSpacedVector(y_0, y_f, p_.N + 1);
+//            y_init.insert(y_init.end(), y_k.begin(), y_k.end());
+//            std::vector<double> o_k = LinearSpacedVector(o_0, o_f, p_.N + 1);
+//            o_init.insert(o_init.end(), o_k.begin(), o_k.end());
+//            break;
+//        }
+//        //Changes Polygons
+//        if (pa_id == 0) {//First polygon change
+//            const auto &pa_next = mission.pas[pa_id + 1];
+//            auto &state = mropt::freespace::FreeSpace::poly_centers->at({pa.pid, pa_next.pid});
+//            std::vector<double> x_k = LinearSpacedVector(x_0, state.x, pa.kf - pa.k0 - 1);
+//            x_init.insert(x_init.end(), x_k.begin(), x_k.end());
+//            std::vector<double> y_k = LinearSpacedVector(y_0, state.y, pa.kf - pa.k0 - 1);
+//            y_init.insert(y_init.end(), y_k.begin(), y_k.end());
+//            std::vector<double> o_k = LinearSpacedVector(o_0, state.o, pa.kf - pa.k0 - 1);
+//            o_init.insert(o_init.end(), o_k.begin(), o_k.end());
+//        } else if (pa_id == mission.pas.size() - 1) {// Last polygon change
+//            const auto &pa_prev = mission.pas[pa_id - 1];
+//            auto &state = mropt::freespace::FreeSpace::poly_centers->at({pa_prev.pid, pa.pid});
+//            std::vector<double> x_k = LinearSpacedVector(state.x, x_f, pa.kf - pa.k0);
+//            x_init.insert(x_init.end(), x_k.begin(), x_k.end());
+//            std::vector<double> y_k = LinearSpacedVector(state.y, y_f, pa.kf - pa.k0);
+//            y_init.insert(y_init.end(), y_k.begin(), y_k.end());
+//            std::vector<double> o_k = LinearSpacedVector(state.o, o_f, pa.kf - pa.k0);
+//            o_init.insert(o_init.end(), o_k.begin(), o_k.end());
+//        } else { // In between
+//            const auto &pa_prev = mission.pas[pa_id - 1];
+//            const auto &state_prev = mropt::freespace::FreeSpace::poly_centers->at({pa_prev.pid, pa.pid});
+//            const auto &pa_next = mission.pas[pa_id + 1];
+//            const auto &state_next = mropt::freespace::FreeSpace::poly_centers->at({pa.pid, pa_next.pid});
+//            std::vector<double> x_k = LinearSpacedVector(state_prev.x, state_next.x, pa.kf - pa.k0);
+//            x_init.insert(x_init.end(), x_k.begin(), x_k.end());
+//            std::vector<double> y_k = LinearSpacedVector(state_prev.y, state_next.y, pa.kf - pa.k0);
+//            y_init.insert(y_init.end(), y_k.begin(), y_k.end());
+//            std::vector<double> o_k = LinearSpacedVector(state_prev.o, state_next.o, pa.kf - pa.k0);
+//            o_init.insert(o_init.end(), o_k.begin(), o_k.end());
+//        }
+//    }
+//    auto u_v_init = std::vector(p_.N, 0.0);
+//    auto u_w_init = std::vector(p_.N, 0.0);
+///*  x_init =  std::vector(p_.N+1, 0.0); //TODO: comment me
+//  y_init =  std::vector(p_.N+1, 0.0);
+//  o_init =  std::vector(p_.N+1, 0.0);*/
+//    //Add Noise
+////  for(auto &x : x_init){ x = x + UniformNoise(-0.1, 0.1);}
+////  for(auto &y : y_init){ y = y + UniformNoise(-0.1, 0.1);}
+////  for(auto &u_v : u_v_init){ u_v = u_v + UniformNoise(-0.01, 0.01);}
+////  for(auto &u_w : u_w_init){ u_w = u_w + UniformNoise(-0.01, 0.01);}
+//    X_curr = DM({x_init, y_init, o_init});
+//    U_curr = DM({u_v_init, u_w_init});
+//
+//    // TODO: each state_space and control_space should provide a way to compute this
+//    // This is an easy fix for now (so forever)
+//    if (X_curr.size1() != ss->nx_) {
+//        int n = ss->nx_ - X_curr.size1();
+//        while (n--) {
+//            auto x_fake = transpose(DM({std::vector(p_.N + 1, 0.0)}));
+//            X_curr = DM::vertcat({X_curr, x_fake});
+//        }
+//    }
+//
+//    if (U_curr.size1() != cs->nu_) {
+//        int n = ss->nx_ - U_curr.size1();
+//        while (n--) {
+//            auto u_fake = transpose(DM({std::vector(p_.N + 1, 0.0)}));
+//            U_curr = DM::vertcat({U_curr, u_fake});
+//        }
+//    }
+//}

@@ -15,7 +15,7 @@ protected:
   casadi::MX X_;
   std::vector<double> lb_, ub_;
 
-  std::list<casadi::MX> get_constraints();
+  virtual std::list<casadi::MX> get_constraints();
 public:
   enum class POS { x = 0, y = 1, o = 2 };
   casadi::Slice all;
@@ -51,15 +51,30 @@ public:
   virtual casadi::MX y() = 0;
   virtual casadi::MX o() = 0;
 
+  virtual void getSE2(
+          const std::vector<double> state,
+          double &x, double &y, double &o) ;
+
   const casadi::MX get_X_0() { return X_(all, 0); }
   const casadi::MX get_X_f() { return X_(all, Nx_ - 1); }
 
-  void set_bounds(casadi::Opti &ocp);
+  virtual void set_bounds(casadi::Opti &ocp);
+  virtual void initial_guess(
+          const std::vector<double> &x0,
+          const std::vector<double> &xf,
+          casadi::DM &X_guess);
 
   void set_lower_bounds(std::vector<double> lb);
   void set_upper_bounds(std::vector<double> ub);
 
   virtual std::shared_ptr<State> clone() const = 0;
+
+  static std::vector<double> LinearSpacedVector(double a, double b, std::size_t N);
 };
 }
+
+
+
+
+
 #endif

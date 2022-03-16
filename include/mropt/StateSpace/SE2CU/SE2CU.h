@@ -22,6 +22,7 @@ namespace mropt::StateSpace {
         double o_std = 0.0;
         double v_std = 0.5;
         double p_std = 0.0;
+        double bound_x_v = 1.0;
     public:
         SE2CU() : State() { nx_ = 5; }
         virtual ~SE2CU(){}
@@ -45,6 +46,12 @@ namespace mropt::StateSpace {
         SX get_std_values() const override {
             return SX::vertcat({x_std, y_std, o_std, v_std, p_std});
         }
+
+        void set_bounds(casadi::Opti &ocp) override;
+        void initial_guess(
+                const std::vector<double> &x0,
+                const std::vector<double> &xf,
+                casadi::DM &X_guess) override;
 
         std::shared_ptr<State> clone() const override;
 

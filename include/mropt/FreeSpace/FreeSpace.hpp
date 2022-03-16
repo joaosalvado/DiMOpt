@@ -42,6 +42,9 @@ public:
     return result[0];
   }
 
+  static void init_cfree(std::vector<std::vector<std::vector<double>>> polygons);
+  static std::vector<mropt::freespace::FreeSpace::PolygonAssignment>
+          stay_always_in_polygon(int N, int p_id);
   void setup(casadi::Opti &ocp) {}
   void setRobotShape(const std::shared_ptr<mropt::RobotShape::Footprint> &shape) { robot_shape = shape; }
   explicit FreeSpace(mropt::StateSpace::State &s) : ss(s) {}

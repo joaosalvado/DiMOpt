@@ -43,6 +43,11 @@ public:
   void set_lower_bounds(std::vector<double> lb);
   void set_upper_bounds(std::vector<double> ub);
 
+  virtual void initial_guess(
+            const std::vector<double> &x0,
+            const std::vector<double> &xf,
+            casadi::DM &U_guess);
+
   virtual std::shared_ptr<Control> clone() const = 0;
 };
 }

@@ -1,6 +1,6 @@
 file(GLOB_RECURSE SOURCE_CODE mropt/*.cpp )
 file(GLOB_RECURSE HEADERS_CODE mropt/*.hpp mropt/*.h )
-add_library(mropt_lib STATIC ${SOURCE_CODE} ${HEADERS_CODE})
+add_library(mropt_lib STATIC ${SOURCE_CODE} ${HEADERS_CODE} mropt/StateSpace/quaternions/Quat2D.cpp mropt/StateSpace/quaternions/Quat2D.h)
 
 target_link_libraries(mropt_lib casadi)
 target_include_directories(mropt_lib PUBLIC ../)

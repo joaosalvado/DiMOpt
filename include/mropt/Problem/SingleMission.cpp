@@ -4,7 +4,7 @@ using namespace mropt::Problem;
 
 void SingleMission::init(std::vector<double> x)
 {
-    if (x.size() > ss.nx())
+    if (x.size() != ss.nx())
     {
         std::cerr << "[SingleMission] Size of the provided state does not match size of state space" << std::endl;
     }

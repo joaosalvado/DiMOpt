@@ -58,4 +58,14 @@ void Control::set_bounds(casadi::Opti &ocp)
     }
 }
 
+void Control::initial_guess(
+        const std::vector<double> &x0,
+        const std::vector<double> &xf,
+        casadi::DM &U_guess) {
+    for(int u_i = 0; u_i < nu(); ++u_i){
+        auto u_fake = transpose(casadi::DM({std::vector(Nu(), 0.0)}));
+        U_guess = casadi::DM::vertcat({U_guess,u_fake});
+    }
+}
+
 

@@ -16,7 +16,7 @@ namespace mropt::ControlSpace {
         double u_a_std = 0.0;
         double u_p_std = 0.0;
         double bound_u_a = 1.0;
-        double bound_u_p = 2.0;
+        double bound_u_p = 1.0;
     public:
         AP() : Control() {
             nu_ = 2; // amount of control
