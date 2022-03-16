@@ -48,11 +48,11 @@ casadi::MX Quat2D::o(){
 
 void Quat2D::set_bounds(casadi::Opti &ocp) {
     // unit circle
-//    ocp.subject_to(X_(2, all) <= bound_qz);
-//    ocp.subject_to(X_(2, all) >= -bound_qz);
-//
-//    ocp.subject_to(X_(3, all) <= bound_qw);
-//    ocp.subject_to(X_(3, all) >= -bound_qw);
+    ocp.subject_to(X_(2, all) <= bound_qz);
+    ocp.subject_to(X_(2, all) >= -bound_qz);
+
+    ocp.subject_to(X_(3, all) <= bound_qw);
+    ocp.subject_to(X_(3, all) >= -bound_qw);
 }
 
 std::list<casadi::MX> Quat2D::get_constraints(){
@@ -70,5 +70,5 @@ void Quat2D::getSE2(
         double &x, double &y, double &o){
     x = state[(int)POS::x];
     y = state[(int)POS::y];
-    o = std::atan(state[3]/state[2]);
+    o = std::atan2(state[3] , state[2]);
 }

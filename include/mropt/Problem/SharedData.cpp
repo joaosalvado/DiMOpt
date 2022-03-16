@@ -612,6 +612,7 @@ void SharedData::getMRTrajectory(
     std::vector<std::vector<std::vector<double>>> &u,
     const std::shared_ptr<DistributedRobot> & robot){
   if(robot->robot_id == 0) {
+      std::cout << robot->X_curr << std::endl;
     // Already have xy
     for (int r = 0; r < R; ++r) {
       x.push_back(Xcurr(r)((int) mropt::StateSpace::State::POS::x, all).get_elements());

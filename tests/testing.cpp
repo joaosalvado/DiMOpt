@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
              }};
     mropt::freespace::FreeSpace::init_cfree(polygons);
     // 1 - Mission
-    int N = 40;
+    int N = 20;
     double T = 10;
 
     // 1.1) Dubins
@@ -93,16 +93,16 @@ int main(int argc, char **argv) {
     // 1.1) Unicycle
     std::vector<std::vector<double>> start =
             {
-                    {1, 1, 0, 1},
-                    {3, 4, 0, 1},
-                    {1, 4, 0, 1}
+                    {1, 1, cos(-0.5 * M_PI), sin(-0.5 * M_PI)},
+                    {3, 4, cos(0.5 * M_PI), sin(0.5 * M_PI)},
+                    {1, 4,cos(0), sin(0)}
             };
     // 1.2) Goal Configuration (x,y, theta) for 3 robot
     std::vector<std::vector<double>> goal =
             {
-                    {2, 2.5, 1, 0 },
-                    {3, 2,   1, 0},
-                    {4, 1,  1, 0}
+                    {2, 2.5, cos(0), sin(0)},
+                    {3, 2,  cos(0), sin(0)},
+                    {4, 1, cos(0), sin(0)}
             };
     // 1.3) Length and Width
     std::vector<double> L = {1, 0.6, 1.3};
@@ -148,6 +148,13 @@ int main(int argc, char **argv) {
     // 4.2 - Solve
     //try {
     mrprob_d.solve();
+
+    std::vector<std::vector<double>> x;
+    std::vector<std::vector<double>> y;
+    std::vector<std::vector<double>> o;
+    std::vector<std::vector<std::vector<double>>> u;
+    robot_d->data_shared->getMRTrajectory(x, y, o, u, robot_d);
+
     mrprob_d.plot_trajectories(std::vector<std::shared_ptr<mropt::Dynamics::ode>>(R, robot_d->get_ode()));
     MPI_Barrier(MPI_COMM_WORLD);
 /*
@@ -155,5 +162,7 @@ int main(int argc, char **argv) {
         std::exit(1); // terminate with exit code 1 = fail
     }
 */
+
+
 
 }
