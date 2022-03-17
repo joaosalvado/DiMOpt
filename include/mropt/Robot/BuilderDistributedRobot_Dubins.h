@@ -23,7 +23,6 @@ namespace mropt::Problem {
                 const std::shared_ptr<mropt::RobotShape::Footprint>& shape
         ) override;
     };
-
 }
 
 

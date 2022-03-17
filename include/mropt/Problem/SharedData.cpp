@@ -511,99 +511,7 @@ void SharedData::plot(std::shared_ptr<DistributedRobot> & robot, double solve_ti
     }
 }
 
-/*void SharedData::plot(std::shared_ptr<DistributedRobot> & robot, double solve_time_r) {
-  if(robot->robot_id == 0) {
-    double g12_{0.0};
-    double g21_{0.0};
-    double z_{0.0};
-    double greal_{0.0};
-    double min_clear{INT_MAX};
-    for (int r1 = 0; r1 < R; ++r1) {
-      for (int r2 = r1 + 1; r2 < R; ++r2) {
-        for (int k = 0; k < N + 1; ++k) {
-          if (r1 == r2)
-            continue;
-          const auto &total_safe_dist
-              = getSafetyDistance(r1) + getSafetyDistance(r2);
-          g12_ = g12_ + robot->collisions_d->col_.f(Xcurr(r1, k), Xprev(r2, k)).scalar() +
-              total_safe_dist * total_safe_dist;
-          g21_ = g21_ + robot->collisions_d->col_.f(Xcurr(r2, k), Xprev(r1, k)).scalar() +
-              total_safe_dist * total_safe_dist;
-          greal_ = greal_ + robot->collisions_d->col_.f(Xcurr(r1, k), Xcurr(r2, k)).scalar() +
-              total_safe_dist * total_safe_dist;
-          z_ = z_ + Z_val(r1, r2, k);
 
-          auto dist = std::sqrt(-robot->collisions_d->col_.f(Xcurr(r1, k), Xcurr(r2, k)).scalar() ) - total_safe_dist;
-          if(dist < min_clear) min_clear = dist;
-        }
-      }
-    }
-    g12_sum.push_back(g12_);
-    g21_sum.push_back(g21_);
-    z_sum.push_back(z_);
-    greal_sum.push_back(greal_);
-    min_clearance.push_back(min_clear);
-  }
-
-  // solving time per robot
-  auto *time = new double[R];
-  MPI_Gather(&solve_time_r,1, MPI_DOUBLE, time,1,  MPI_DOUBLE, 0,
-             MPI_COMM_WORLD);
-  for(int r = 0; r < R; ++r){
-    time_r[r].push_back(time[r]);
-  }
-  delete[] time;
-
-  // Cost of the multirobot system
-  DM t0f = DM({robot->p_.t0, robot->p_.tf});
-  double local_cost = robot->cost->J(robot->X_curr, robot->U_curr, t0f).scalar();
-  auto *global_sum = new double[R];
-  MPI_Gather(&local_cost,1, MPI_DOUBLE, global_sum,1,  MPI_DOUBLE, 0,
-             MPI_COMM_WORLD);
-
-  if(robot->robot_id == 0) {
-    double sum_mr{0.0};
-    for (int r = 0; r < R; ++r) {
-      cost_r[r].push_back(global_sum[r]);
-      sum_mr = sum_mr + global_sum[r];
-    }
-    cost_mr.push_back(sum_mr);
-  }
-
-  // Plot in robot/process 0
-  if(robot->robot_id == 0) {
-    //  plt::clf(); plt::cla(); plt::close();
-    plt::subplot(2, 2, 1);
-    plt::title("Consensus Sum Distances");
-    plt::named_plot("g12", g12_sum);
-    plt::named_plot("g21", g21_sum);
-    plt::named_plot("z", z_sum);
-    plt::named_plot("greal", greal_sum);
-    plt::legend();
-    //plt::show();
-
-    plt::subplot(2, 2, 2);
-    plt::title("Cost Mulrirobot");
-//    for (int r = 0; r < R; ++r) {
-//      std::string name{"robot " + std::to_string(r)};
-//      plt::named_plot(name, cost_r[r]);
-//    }
-    plt::named_plot("MR cost", cost_mr);
-
-    plt::subplot(2, 2, 3);
-    plt::title("Minimum Clearance");
-    plt::named_plot("Distance", min_clearance);
-
-    plt::subplot(2, 2, 4);
-    plt::title("Solving Time");
-    for (int r = 0; r < R; ++r) {
-      std::string name{"robot " + std::to_string(r)};
-      plt::named_plot(name, time_r[r]);
-    }
-
-    plt::show();
-  }
-}*/
 
 void SharedData::getMRTrajectory(
     std::vector<std::vector<double>> &x,
@@ -612,7 +520,8 @@ void SharedData::getMRTrajectory(
     std::vector<std::vector<std::vector<double>>> &u,
     const std::shared_ptr<DistributedRobot> & robot){
   if(robot->robot_id == 0) {
-      std::cout << robot->X_curr << std::endl;
+      std::cout << robot->X_curr << std::endl; // Todo: remove me
+      std::cout << robot->U_curr << std::endl; // TODO: remove me
     // Already have xy
     for (int r = 0; r < R; ++r) {
       x.push_back(Xcurr(r)((int) mropt::StateSpace::State::POS::x, all).get_elements());

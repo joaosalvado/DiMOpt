@@ -24,9 +24,9 @@ namespace mropt::Dynamics::CarLike {
             //Model
             SX X_dot = SX::vertcat(
                     {vw->v_ode * quat->qz_ode,
-                     vw->v_ode * quat->qw_ode,
-                     (1 / L_)* (-quat->qw_ode) * vw->w_ode,
-                     (1 / L_)* quat->qz_ode * vw->w_ode});
+                        vw->v_ode * quat->qw_ode,
+                     - (1 / L_) * quat->qw_ode * vw->w_ode,
+                       (1 / L_) * quat->qz_ode * vw->w_ode});
             f_ = Function("f", {quat->X_ode(), vw->U_ode()}, {X_dot});
             jac_f_ = f_.jacobian();
 

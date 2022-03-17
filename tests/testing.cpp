@@ -48,28 +48,28 @@ int main(int argc, char **argv) {
              }};
     mropt::freespace::FreeSpace::init_cfree(polygons);
     // 1 - Mission
-    int N = 20;
+    int N = 40;
     double T = 10;
 
     // 1.1) Dubins
-//    std::vector<std::vector<double>> start =
-//            {
-//                    {1, 1, 0.5 * M_PI},
-//                    {3, 4, 0.5 * M_PI},
-//                    {1, 4, 0}
-//            };
-//    // 1.2) Goal Configuration (x,y, theta) for 3 robot
-//    std::vector<std::vector<double>> goal =
-//            {
-//                    {2, 2.5, 0},
-//                    {3, 2,   0},
-//                    {4, 1,   0}
-//            };
-//    // 1.3) Length and Width
-//    std::vector<double> L = {1,
-//                             0.6,
-//                             1.3};
-//    std::vector<double> W = {1, 0.6, 1.3};
+    std::vector<std::vector<double>> start =
+            {
+                    {1, 1, 0.5 * M_PI},
+                    {3, 4, 0.5 * M_PI},
+                    {1, 4, 0}
+            };
+    // 1.2) Goal Configuration (x,y, theta) for 3 robot
+    std::vector<std::vector<double>> goal =
+            {
+                    {2, 2.5, 0},
+                    {3, 2,   0},
+                    {4, 1,   0}
+            };
+    // 1.3) Length and Width
+    std::vector<double> L = {1,
+                             0.6,
+                             1.3};
+    std::vector<double> W = {1, 0.6, 1.3};
 
 
 //    // 1.1) Unicycle
@@ -90,24 +90,24 @@ int main(int argc, char **argv) {
 //    std::vector<double> L = {1, 0.6, 1.3};
 //    std::vector<double> W = {1, 0.6, 1.3};
 
-    // 1.1) Unicycle
-    std::vector<std::vector<double>> start =
-            {
-                    {1, 1, cos(-0.5 * M_PI), sin(-0.5 * M_PI)},
-                    {3, 4, cos(0.5 * M_PI), sin(0.5 * M_PI)},
-                    {1, 4,cos(0), sin(0)}
-            };
-    // 1.2) Goal Configuration (x,y, theta) for 3 robot
-    std::vector<std::vector<double>> goal =
-            {
-                    {2, 2.5, cos(0), sin(0)},
-                    {3, 2,  cos(0), sin(0)},
-                    {4, 1, cos(0), sin(0)}
-            };
-    // 1.3) Length and Width
-    std::vector<double> L = {1, 0.6, 1.3};
-    std::vector<double> W = {1, 0.6, 1.3};
-
+    // 1.1) Quaternions
+//    std::vector<std::vector<double>> start =
+//            {
+//                    {1, 1, cos(-0.5 * M_PI), sin(-0.5 * M_PI)},
+//                    {3, 4, cos(0.5 * M_PI), sin(0.5 * M_PI)},
+//                    {1, 4,cos(0), sin(0)}
+//            };
+//    // 1.2) Goal Configuration (x,y, theta) for 3 robot
+//    std::vector<std::vector<double>> goal =
+//            {
+//                    {2, 2.5, cos(0), sin(0)},
+//                    {3, 2,  cos(0), sin(0)},
+//                    {4, 1, cos(0), sin(0)}
+//            };
+//    // 1.3) Length and Width
+//    std::vector<double> L = {1, 0.6, 1.3};
+//    std::vector<double> W = {1, 0.6, 1.3};
+//
 
 
     // Test MPI treads is equal to number of robots
@@ -121,14 +121,14 @@ int main(int argc, char **argv) {
 //    auto params = mropt::Problem::Robot::Params{0.0, T, N};
 //    builder_unicycle_car.make_robot(r, params);
 //    auto robot_d = builder_unicycle_car.getDistributedRobot();
-//    mropt::Problem::BuilderDistributedRobot_Dubins builder_dubins_car(L[r]);
-//    auto params = mropt::Problem::Robot::Params{0.0, T, N};
-//    builder_dubins_car.make_robot(r, params);
-//    auto robot_d = builder_dubins_car.getDistributedRobot();
-    mropt::Problem::BuilderRobot_DiffDriveQuat builder_ddquat_car(L[r]);
+    mropt::Problem::BuilderDistributedRobot_Dubins builder_dubins_car(L[r]);
     auto params = mropt::Problem::Robot::Params{0.0, T, N};
-    builder_ddquat_car.make_robot(r, params);
-    auto robot_d = builder_ddquat_car.getDistributedRobot();
+    builder_dubins_car.make_robot(r, params);
+    auto robot_d = builder_dubins_car.getDistributedRobot();
+//    mropt::Problem::BuilderRobot_DiffDriveQuat builder_ddquat_car(L[r]);
+//    auto params = mropt::Problem::Robot::Params{0.0, T, N};
+//    builder_ddquat_car.make_robot(r, params);
+//    auto robot_d = builder_ddquat_car.getDistributedRobot();
     // 3.2 - Assign missions to the robots
     auto pas = mropt::freespace::FreeSpace::stay_always_in_polygon(N,0);
     robot_d->addMission(start[r], goal[r], {pas});

@@ -218,7 +218,7 @@ void Robot::resetQuery(Opti &ocp) {
     }
 
     // Constraints - Dynamics
-    const auto &dynamics_constraints_list = dynamics->get_constraints();
+    const auto &dynamics_constraints_list = dynamics->get_constraints(ocp);
     int g_t_num = dynamics_constraints_list.size();
     if (g_t_num != 0) {
         int dim_g_t = dynamics_constraints_list[0].size1(); //multiple shooting is equal to nx()

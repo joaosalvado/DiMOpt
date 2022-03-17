@@ -74,7 +74,7 @@ private:
     return result[0];
   }
 
-  virtual std::vector<MX> get_constraints() = 0;
+  virtual std::vector<MX> get_constraints(casadi::Opti &ocp) = 0;
 
   std::list<MX> get_trust_region_constraints() {
     return ode_approx_->get_trust_region_constraints_bounded();
