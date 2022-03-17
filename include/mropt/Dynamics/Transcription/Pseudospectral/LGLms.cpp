@@ -6,19 +6,24 @@
 
 using namespace mropt::Dynamics;
 
+
 std::vector<MX> LGLms::get_constraints(casadi::Opti &ocp) {
     std::vector<MX> g;
     int nx = this->ode_->state_space_->X().size1();
     auto h = (this->tf - this->t0) / (N - 1);
     //J_ = 0;
 
-    W = MX::vertcat({W, this->ode_->state_space_->X()(all, 0)});
+    //W = MX::vertcat({W, this->ode_->state_space_->X()(all, 0)});
     for (int k = 0; k < N; ++k) {
         // Create collocation states
-        auto o = ocp.variable(nx, n);
+        auto o = ocp.variable(nx, n-1);
 
-        auto xo = MX::horzcat({this->ode_->state_space_->X()(all, k), o});
-        W = MX::horzcat({W, o});
+        auto xo = MX::horzcat(
+                {this->ode_->state_space_->X()(all, k),
+                 o,
+                 this->ode_->state_space_->X()(all, k+1)});
+        o = MX::horzcat({o, this->ode_->state_space_->X()(all,k+1)});
+        //W = MX::horzcat({W, o});
         MX u = MX::repmat(this->ode_->control_space_->U()(all, k), 1, n + 1);
         // Defect constraints
         auto x_dot_ = (*(ode_approx_->fapprox(k)))({{o},
@@ -28,15 +33,16 @@ std::vector<MX> LGLms::get_constraints(casadi::Opti &ocp) {
         auto g_d = mtimes(D(Slice(1, n + 1), all), transpose(xo)) - transpose(F);
 
         // Shooting gap
-        auto g_s = this->ode_->state_space_->X()(all, k + 1) - o(all, n - 1);
-
-        g.push_back(g_s);
+//        auto g_s = this->ode_->state_space_->X()(all, k + 1) - o(all, n - 1);
+//
+//        g.push_back(g_s);
         g.push_back(MX::vec(g_d));
 
         return g;
     }
 }
 
+// TODO: change this to the constraints being approximated
 void LGLms::set_J_real() {
     MX g_sum{0.0};
     MX g_max{0.0};
