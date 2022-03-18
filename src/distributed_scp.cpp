@@ -10,7 +10,6 @@
 #include "mropt/ControlSpace/R2/VW.hpp"
 #include "mropt/Dynamics/CarLike/DiffDrive.hpp"
 #include "mropt/Dynamics/Approx/FirstOrderTaylor.hpp"
-#include "mropt/Dynamics/Transcription/LocalCollocation/MultipleShooting.hpp"
 #include "mropt/Dynamics/Transcription/LocalCollocation/MultipleShootingApprox.hpp"
 #include "mropt/FreeSpace/FreeSpace.hpp"
 #include "mropt/Cost/Cost.hpp"
@@ -75,6 +74,8 @@ int main(int argc, char** argv) {
     auto se2 = std::make_shared<mropt::StateSpace::SE2>();
     //Control Space
     auto vw = std::make_shared<mropt::ControlSpace::VW>();
+    // Cost
+    auto cost = std::make_shared<mropt::cost::Cost>(*vw, *se2);
     //Robot Shape
     auto shape = std::make_shared<mropt::RobotShape::CircleRobot>(L[r] / 2);
     // Dynamic Model
@@ -82,9 +83,7 @@ int main(int argc, char** argv) {
     // Model Approx
     auto fot = std::make_shared<mropt::Dynamics::Approx::FirstOrderTaylor>(model);
     // Transcription Approx
-    auto ms_approx = std::make_shared<mropt::Dynamics::MultipleShootingApprox>(fot);
-    // Cost
-    auto cost = std::make_shared<mropt::cost::Cost>(*vw, *se2);
+    auto ms_approx = std::make_shared<mropt::Dynamics::MultipleShootingApprox>(fot, cost);
     // Free Space
     auto cfree = std::make_shared<mropt::freespace::FreeSpace>(*se2);
     // Collisions Approximation - Coupled

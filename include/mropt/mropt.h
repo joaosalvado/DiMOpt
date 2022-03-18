@@ -15,7 +15,6 @@
 #include "mropt/ControlSpace/R2/VW.hpp"
 #include "mropt/Dynamics/CarLike/DiffDrive.hpp"
 #include "mropt/Dynamics/Approx/FirstOrderTaylor.hpp"
-#include "mropt/Dynamics/Transcription/LocalCollocation/MultipleShooting.hpp"
 #include "mropt/Dynamics/Transcription/LocalCollocation/MultipleShootingApprox.hpp"
 #include "mropt/FreeSpace/FreeSpace.hpp"
 #include "mropt/Cost/Cost.hpp"

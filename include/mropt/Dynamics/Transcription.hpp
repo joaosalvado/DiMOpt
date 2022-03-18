@@ -6,6 +6,7 @@
 #include "mropt/util/integration.hpp"
 #include "OdeApprox.hpp"
 #include "ode.hpp"
+#include "mropt/Cost/Cost.hpp"
 
 using namespace casadi;
 
@@ -24,6 +25,7 @@ protected:
   friend class mropt::Problem::DistributedRobot;
   Slice all;
   std::shared_ptr<OdeApprox> ode_approx_;
+  std::shared_ptr<mropt::cost::Cost> cost_;
   Function J_real_;
   Function J_max_;
   Function J_model_;
@@ -33,8 +35,8 @@ protected:
   std::function<MX(const Function &, const MX &, const MX &, const MX &)> integrator;
 
 public:
-  explicit Transcription(const std::shared_ptr<OdeApprox> &ode)
-      : ode_approx_(ode), ode_(ode->get_ode()), integrator(mropt::util::rk4) {
+  explicit Transcription(const std::shared_ptr<OdeApprox> &ode, const std::shared_ptr<mropt::cost::Cost> &cost)
+      : ode_approx_(ode), ode_(ode->get_ode()), integrator(mropt::util::rk4), cost_(cost) {
     //integrator = rk4;
   };
 
@@ -95,11 +97,14 @@ private:
 
   virtual void set_J_real() = 0;
 
+  virtual void set_J() = 0;
+
   virtual int computeN(int inital_N){ return inital_N;}
 
   TrustRegion &trustRegion() { return ode_approx_->trust_region_; }
   virtual std::shared_ptr<Transcription> clone(
-      const std::shared_ptr<OdeApprox> ode_approx) const = 0;
+      const std::shared_ptr<OdeApprox> ode_approx,
+      const std::shared_ptr<mropt::cost::Cost> &cost) const = 0;
 };
 }
 #endif

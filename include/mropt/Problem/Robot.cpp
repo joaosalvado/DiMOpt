@@ -27,7 +27,7 @@ Robot::Robot(const Robot &robot) {
     this->cost = std::make_shared<mropt::cost::Cost>(*this->cs, *this->ss);
     const auto &ode_copy = robot.dynamics->ode_->clone(this->ss, this->cs, this->shape);
     const auto &ode_approx_copy = robot.dynamics->ode_approx_->clone(ode_copy);
-    this->dynamics = robot.dynamics->clone(ode_approx_copy);
+    this->dynamics = robot.dynamics->clone(ode_approx_copy, this->cost);
 
     setup();
 }
@@ -294,8 +294,9 @@ void Robot::setupQuery(Opti &ocp) {
     mu_free = ocp.parameter(1);
     mu_f_0 = mu_f_0_init;
     ocp.set_value(mu_free, mu_f_0_init);
-    J_model = J_model + cost->integrated_cost(dynamics->t0, dynamics->tf, dynamics->N) + mu_dynamics * sum_g_dynamics
-              + mu_free * sum_g_free;
+    dynamics->set_J(); // TODO: testing this
+    J_model = J_model + cost->integrated_cost(p_.t0, p_.tf, dynamics->N) + mu_dynamics * sum_g_dynamics
+              + mu_free * sum_g_free; //dynamics->tf and t0
     J_model_nocol = J_model; //TODO: remove me
 }
 

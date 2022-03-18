@@ -25,28 +25,39 @@ namespace mropt::Problem{
   class Problem;
   class Robot;
 }
+namespace mropt::Dynamics{
+    class Transcription;
+}
 
 namespace mropt::cost {
 class Cost {
-protected:
+public:
   friend class mropt::Problem::Robot;
+  friend class mropt::Dynamics::Transcription;
   Slice all;
   Function l_, J_;
+  MX _J;
   mropt::StateSpace::State &state_space_;
   mropt::ControlSpace::Control &control_space_;
 
   std::function<MX(const Function &, const MX &, const MX &, const MX &)> integrator;
-  MX integrated_cost(MX t0, MX tf, int N) {
+
+    MX integrated_cost(DM t0, DM tf, int N) {
+        return _J;
+    }
+/*  MX integrated_cost(MX t0, MX tf, int N) {
     //Integrated cost
-    MX _J = 0;
+    _J = 0;
     for (int k = 0; k < N; ++k) {
       _J = _J + integrator(l_, (tf - t0) / (double) N, state_space_.X()(all, k), control_space_.U()(all, k));
     }
     MX params = MX::vertcat({t0, tf});
     J_ = Function("J", {state_space_.X(), control_space_.U(), params}, {_J});
     return _J;
-  }
+  }*/
 public:
+
+    void set_J(MX J){this->_J = J;}
   Cost(
       mropt::ControlSpace::Control &cs,
       mropt::StateSpace::State &ss)

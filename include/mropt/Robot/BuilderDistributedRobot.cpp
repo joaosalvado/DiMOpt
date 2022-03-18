@@ -26,9 +26,10 @@ BuilderDistributedRobot::build_ode_approx(
 
 std::shared_ptr<mropt::Dynamics::Transcription>
 BuilderDistributedRobot::build_transcription(
-        const std::shared_ptr<mropt::Dynamics::OdeApprox> ode_approx){
+        const std::shared_ptr<mropt::Dynamics::OdeApprox> ode_approx,
+        const std::shared_ptr<mropt::cost::Cost> cost){
     auto fot = std::dynamic_pointer_cast<mropt::Dynamics::Approx::FirstOrderTaylor>(ode_approx);
-    return std::make_shared<mropt::Dynamics::MultipleShootingApprox>(fot);
+    return std::make_shared<mropt::Dynamics::MultipleShootingApprox>(fot, cost);
 }
 
 

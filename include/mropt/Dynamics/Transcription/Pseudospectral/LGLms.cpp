@@ -47,12 +47,11 @@ std::vector<MX> LGLms::get_constraints(casadi::Opti &ocp) {
         } else {
             utt = ode_->control_space_->U()(all,Slice(k, k+n+1));
         }
-//        auto l_k_ = J({{xo}, {utt}});
-//        auto l_k = MX::vertcat(l_k_);
-//        J_ += 0.5 * h * mtimes(l_k, w); // quadrature
-
-        return g;
+        auto l_k_ = this->cost_->l_({{xo}, {utt}});
+        auto l_k = MX::vertcat(l_k_);
+        J_ += 0.5 * h * mtimes(l_k, w); // quadrature
     }
+    return g;
 }
 
 // TODO: change this to the constraints defined in get_constraints
@@ -80,10 +79,6 @@ void LGLms::set_J_real() {
     J_real_ = Function("J_real", {ode_->state_space_->X(), ode_->control_space_->U(), tf}, {g_sum});
 }
 
-
-MX LGLms::integrated_cost(MX t0, MX tf, int N) {
-    return J_;
-}
 
 void LGLms::create_LGL_params(int degree) {
     if (degree == 1) {
@@ -142,6 +137,12 @@ int LGLms::computeN(int initial_N) {
     initial_N = initial_N + n/2;
     initial_N = initial_N - ( initial_N % n );
     return initial_N +1;
+}
+
+void LGLms::set_J(){
+    cost_->_J = J_;
+    MX params = MX::vertcat({tf, t0});
+    cost_->J_ = Function("J", { this->cost_->state_space_.X(),  this->cost_->control_space_.U(), params}, {this->cost_->_J});
 }
 
 
