@@ -95,6 +95,8 @@ private:
 
   virtual void set_J_real() = 0;
 
+  virtual int computeN(int inital_N){ return inital_N;}
+
   TrustRegion &trustRegion() { return ode_approx_->trust_region_; }
   virtual std::shared_ptr<Transcription> clone(
       const std::shared_ptr<OdeApprox> ode_approx) const = 0;

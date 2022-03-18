@@ -191,6 +191,7 @@ bool Robot::backtrack() {
 }
 
 void Robot::resetQuery(Opti &ocp) {
+    p_.N = dynamics->computeN(p_.N);
     //Creating decision vars
     cs->setU(ocp.variable(cs->nu(), p_.N));
     ss->setX(ocp.variable(ss->nx(), p_.N + 1));

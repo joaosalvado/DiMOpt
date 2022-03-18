@@ -52,6 +52,8 @@ namespace mropt::Dynamics {
         void set_J_real() override;
         MX getStates() { return W; };
 
+        int computeN(int inital_N) override;
+
     private:
         void create_LGL_params(int degree);
     private:
