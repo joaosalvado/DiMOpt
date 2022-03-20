@@ -49,7 +49,7 @@ void DecoupledProblem::reset() {
 }
 
 void DecoupledProblem::setup() {
-    robot->data_shared = std::make_shared<SharedData>(N, R);
+    robot->data_shared = std::make_shared<SharedData>(robot->p_.N, R);
     robot->collisions_d->setDataShared(robot->data_shared);
 
     robot->setupQuery(*robot->ocp_);
@@ -80,7 +80,7 @@ void DecoupledProblem::setup() {
 
     //Share trajectories between robots
     robot->data_shared->init_sync(robot);
-    robot->collisions_d->setup(R, N, robot);
+    robot->collisions_d->setup(R, robot->p_.N, robot);
     robot->J_model =
             robot->J_model +
             robot->collisions_d->get_augmented_lagrangian() +
@@ -280,11 +280,12 @@ void DecoupledProblem::test() {
             query_time_1 = max_solve_time_r + share_time_r;
             cost_1 = robot->data_shared->actual_cost(robot);
             record_curr.iter_1 = i+1;
-            //break;
+            // break; // Todo: comment me
         }
         // Exit condition
         if (max_collision <= robot->collisions_d->col_.threshold
             && cost_improvement <= delta_f_tol) break; //TODO: uncomment me
+
         total_prev_true_cost = total_true_cost;
         MPI_Barrier(MPI_COMM_WORLD); //sync point
         if(i == max_iter-1 && robot->robot_id == 0 && !found_first) record_curr.fail_status = -2;

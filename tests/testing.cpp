@@ -9,6 +9,7 @@
 #include "mropt/Robot/BuilderDistributedRobot_Dubins.h"
 #include "mropt/Robot/BuilderDistributedRobot_Unicycle.h"
 #include "mropt/Robot/BuilderRobot_DiffDriveQuat.h"
+#include "mropt/Robot/BuilderRobot_LGL_Dubins.h"
 
 int main(int argc, char **argv) {
 
@@ -49,7 +50,7 @@ int main(int argc, char **argv) {
     mropt::freespace::FreeSpace::init_cfree(polygons);
     // 1 - Mission
     int N = 40;
-    double T = 10;
+    double T = 20;
 
     // 1.1) Dubins
     std::vector<std::vector<double>> start =
@@ -121,14 +122,20 @@ int main(int argc, char **argv) {
 //    auto params = mropt::Problem::Robot::Params{0.0, T, N};
 //    builder_unicycle_car.make_robot(r, params);
 //    auto robot_d = builder_unicycle_car.getDistributedRobot();
-    mropt::Problem::BuilderDistributedRobot_Dubins builder_dubins_car(L[r]);
+/*    mropt::Problem::BuilderDistributedRobot_Dubins builder_dubins_car(L[r]);
     auto params = mropt::Problem::Robot::Params{0.0, T, N};
     builder_dubins_car.make_robot(r, params);
-    auto robot_d = builder_dubins_car.getDistributedRobot();
+    auto robot_d = builder_dubins_car.getDistributedRobot();*/
 //    mropt::Problem::BuilderRobot_DiffDriveQuat builder_ddquat_car(L[r]);
 //    auto params = mropt::Problem::Robot::Params{0.0, T, N};
 //    builder_ddquat_car.make_robot(r, params);
 //    auto robot_d = builder_ddquat_car.getDistributedRobot();
+
+// LGL Dubins
+    mropt::Problem::BuilderRobot_LGL_Dubins builder_lgl_dubins_car(L[r], 3);
+    auto params = mropt::Problem::Robot::Params{0.0, T, N};
+    builder_lgl_dubins_car.make_robot(r, params);
+    auto robot_d = builder_lgl_dubins_car.getDistributedRobot();
     // 3.2 - Assign missions to the robots
     auto pas = mropt::freespace::FreeSpace::stay_always_in_polygon(N,0);
     robot_d->addMission(start[r], goal[r], {pas});
