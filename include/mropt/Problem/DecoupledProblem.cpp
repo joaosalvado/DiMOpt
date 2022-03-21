@@ -285,6 +285,8 @@ void DecoupledProblem::test() {
         // Exit condition
         if (max_collision <= robot->collisions_d->col_.threshold
             && cost_improvement <= delta_f_tol) break; //TODO: uncomment me
+//        if (max_collision <= robot->collisions_d->col_.threshold
+//            && i >10) break;
 
         total_prev_true_cost = total_true_cost;
         MPI_Barrier(MPI_COMM_WORLD); //sync point

@@ -23,12 +23,13 @@ protected:
   std::function<DM(const Function &, const DM &, const DM &, const DM &)> integrator;
   std::vector<std::shared_ptr<mropt::Dynamics::ode>> odes;
   int R{0};
+  int pol_n;
   Slice all;
 
 public:
   friend class mropt::Problem::CoupledProblem;
   friend class mropt::Problem::DecoupledProblem;
-  explicit Plotter(int R) : integrator(rk4_num), R(R) {}
+  explicit Plotter(int R, int pol_n_ = 0) : integrator(rk4_num), R(R), pol_n(pol_n_) {}
   virtual ~Plotter() = default;
   void set_models(const std::vector<std::shared_ptr<mropt::Dynamics::ode>> &odes_) {
     odes = odes_;

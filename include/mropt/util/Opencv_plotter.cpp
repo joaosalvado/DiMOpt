@@ -251,7 +251,13 @@ void Opencv_plotter::plot_trajectory(
         std::vector<std::vector<std::vector<double>>> u,
         double time) {
     auto N = x[0][0].size();
-    double dt = time / N;
+    double dt;
+    if(pol_n){
+        dt = time / ((N-1)*pol_n);
+    } else{
+        dt = time / N;
+    };
+
     for (int k = 0; k < N - 1; ++k) {
 //clock_t start, end;
         double dt_curr = 0;

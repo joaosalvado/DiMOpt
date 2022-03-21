@@ -44,8 +44,8 @@ namespace mropt::util {
         } Rectangle;
 
     public:
-        explicit Opencv_plotter(int R_)
-                : mropt::util::Plotter(R_),
+        explicit Opencv_plotter(int R_, int pol_n = 0)
+                : mropt::util::Plotter(R_, pol_n),
                   length_px_(std::vector<int>(R_)),
                   width_px_(std::vector<int>(R_)) {
 

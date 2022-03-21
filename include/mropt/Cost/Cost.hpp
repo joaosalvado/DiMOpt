@@ -42,19 +42,19 @@ public:
 
   std::function<MX(const Function &, const MX &, const MX &, const MX &)> integrator;
 
-    MX integrated_cost(DM t0, DM tf, int N) {
+    MX integrated_cost(MX t0, MX tf, int N) {
         return _J;
     }
-/*  MX integrated_cost(MX t0, MX tf, int N) {
-    //Integrated cost
-    _J = 0;
-    for (int k = 0; k < N; ++k) {
-      _J = _J + integrator(l_, (tf - t0) / (double) N, state_space_.X()(all, k), control_space_.U()(all, k));
-    }
-    MX params = MX::vertcat({t0, tf});
-    J_ = Function("J", {state_space_.X(), control_space_.U(), params}, {_J});
-    return _J;
-  }*/
+//  MX integrated_cost(MX t0, MX tf, int N) {
+//    //Integrated cost
+//    _J = 0;
+//    for (int k = 0; k < N; ++k) {
+//      _J = _J + integrator(l_, (tf - t0) / (double) N, state_space_.X()(all, k), control_space_.U()(all, k));
+//    }
+//    MX params = MX::vertcat({t0, tf});
+//    J_ = Function("J", {state_space_.X(), control_space_.U(), params}, {_J});
+//    return _J;
+//  }
 public:
 
     void set_J(MX J){this->_J = J;}
@@ -62,7 +62,6 @@ public:
       mropt::ControlSpace::Control &cs,
       mropt::StateSpace::State &ss)
       : control_space_(cs), state_space_(ss), integrator(mropt::util::rk4) {
-    //integrator = rk4;
     set_cost();
   }
   Cost(const Cost &) = delete;
@@ -78,7 +77,7 @@ public:
     return result[0];
   }
   casadi::DM J(const casadi::DM &x_r, const casadi::DM &u_r, const casadi::DM &p) {
-    const auto &result = J_(std::vector<casadi::DM>{{x_r}, {u_r}, {p}});
+      const auto &result = J_(std::vector<casadi::DM>{{x_r}, {u_r}, {p}});
     return result[0];
   }
 

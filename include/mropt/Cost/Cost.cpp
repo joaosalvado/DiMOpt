@@ -12,4 +12,4 @@ SX Cost::generate_cost(){
 		}
 		auto P = SX::diag(weight);
 		return mtimes(transpose(vars) - transpose(vars_std), mtimes(P, vars - vars_std));
-	}	
+}

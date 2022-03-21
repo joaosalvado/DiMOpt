@@ -295,8 +295,8 @@ void Robot::setupQuery(Opti &ocp) {
     mu_f_0 = mu_f_0_init;
     ocp.set_value(mu_free, mu_f_0_init);
     dynamics->set_J(); // TODO: testing this
-    J_model = J_model + cost->integrated_cost(p_.t0, p_.tf, dynamics->N) + mu_dynamics * sum_g_dynamics
-              + mu_free * sum_g_free; //dynamics->tf and t0
+    J_model = J_model + cost->integrated_cost(dynamics->t0, dynamics->tf, dynamics->N) + mu_dynamics * sum_g_dynamics
+              + mu_free * sum_g_free;
     J_model_nocol = J_model; //TODO: remove me
 }
 

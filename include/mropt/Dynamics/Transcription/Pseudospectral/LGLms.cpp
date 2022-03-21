@@ -6,10 +6,89 @@
 
 using namespace mropt::Dynamics;
 
+//std::vector<MX> LGLms::get_constraints(casadi::Opti &ocp) {
+//    std::vector<MX> g;
+//    auto h = (this->tf - this->t0) / (N); // N-1 before
+//    J_ = 0;
+//    int nu = ode_->control_space_->U().size1();
+//
+//    for (int k = 0; k < N; k+=n) {
+//        auto xo = ode_->state_space_->X()(all,Slice(k, k+n+1));
+//        auto o = ode_->state_space_->X()(all,Slice(k, k+n));
+//        auto ut = ode_->control_space_->U()(all,Slice(k, k+n));
+//
+//        // Defect constraints
+//        auto x_dot_ = (*(ode_approx_->fapprox(k)))({{o},
+//                                                    {ode_->control_space_->U()(all, k)}});
+//        auto x_dot = MX::vertcat(x_dot_);
+//        auto F = 0.5 * mtimes (h , x_dot);
+//        auto g_d = mtimes(D(Slice(1, n + 1), all), transpose(xo)) - transpose(F);
+//
+//        // Controls equal
+//        for(int u_k = 0; u_k < n-1; ++u_k){
+//            ocp.subject_to(ut(all, u_k) - ut(all, u_k+1) == 0);
+//        }
+//
+//        // Shooting gap
+////        auto g_s = this->ode_->state_space_->X()(all, k + 1) - o(all, n - 1);
+////
+////        g.push_back(g_s);
+//        g.push_back(MX::vec(g_d));
+//
+//        // Cost
+//        MX utt;
+//        if (k == N -n) {
+//            utt = MX::horzcat(
+//                    {
+//                            ode_->control_space_->U()(all,Slice(k, k+n)),
+//                            MX::zeros(nu, 1)
+//                    });
+//        } else {
+//            utt = ode_->control_space_->U()(all,Slice(k, k+n+1));
+//        }
+//        utt = ode_->control_space_->U()(all,k);
+//        auto l_k_ = this->cost_->l_({{xo}, {utt}});
+//        auto l_k = MX::vertcat(l_k_);
+//        J_ += 0.5 * h * mtimes(l_k, w); // quadrature
+//    }
+//
+////    J_ = 0;
+////    for (int k = 0; k < N; ++k) {
+////        J_ += integrator(this->cost_->l_, (tf - t0) / (double) N,
+////                           ode_->state_space_->X()(all, k),
+////                           ode_->control_space_->U()(all, k));
+////    }
+//    return g;
+//}
+
+//void LGLms::set_J_real() {
+//    MX g_sum{0.0};
+//    MX g_max{0.0};
+//    auto h = (this->tf - 0) / (N - 1);
+//    for (int k = 0; k < N; k+=n) {
+//        auto xo = ode_->state_space_->X()(all,Slice(k, k+n+1));
+//        auto o = ode_->state_space_->X()(all,Slice(k, k+n));
+//        //auto ut = ode_->control_space_->U()(all,Slice(k, k+n));
+//        auto ut =  ode_->control_space_->U()(all,k);
+//        // Defect constraints
+//        auto x_dot_ = ode_->f()({{o},{ut}});
+//        auto x_dot = MX::vertcat(x_dot_);
+//        auto F = 0.5 * h * x_dot;
+//        auto g_d = mtimes(D(Slice(1, n + 1), all), transpose(xo)) - transpose(F);
+//
+//        g_sum = g_sum + sum2(sum1(MX::abs(g_d)));
+//        g_max = mmax(MX::vertcat({g_max, mmax(MX::abs(g_d))}));
+//    }
+//    J_max_ = Function("J_max", {ode_->state_space_->X(), ode_->control_space_->U(), tf},
+//                      {g_max * N / tf}); // TODO: put it back to g_max
+//
+//    J_real_ = Function("J_real", {ode_->state_space_->X(), ode_->control_space_->U(), tf}, {g_sum});
+//}
+
 
 std::vector<MX> LGLms::get_constraints(casadi::Opti &ocp) {
     std::vector<MX> g;
-    auto h = (this->tf) / (N - 1);
+    auto h = (this->tf - this->t0) / (N); // N-1 before
     J_ = 0;
     int nu = ode_->control_space_->U().size1();
 
@@ -52,14 +131,20 @@ std::vector<MX> LGLms::get_constraints(casadi::Opti &ocp) {
         auto l_k = MX::vertcat(l_k_);
         J_ += 0.5 * h * mtimes(l_k, w); // quadrature
     }
+
+//    J_ = 0;
+//    for (int k = 0; k < N; ++k) {
+//        J_ += integrator(this->cost_->l_, (tf - t0) / (double) N,
+//                           ode_->state_space_->X()(all, k),
+//                           ode_->control_space_->U()(all, k));
+//    }
     return g;
 }
 
-// TODO: change this to the constraints defined in get_constraints
 void LGLms::set_J_real() {
     MX g_sum{0.0};
     MX g_max{0.0};
-    auto h = (this->tf - 0) / (N - 1);
+    auto h = (this->tf - 0) / (N);
     for (int k = 0; k < N; k+=n) {
         auto xo = ode_->state_space_->X()(all,Slice(k, k+n+1));
         auto o = ode_->state_space_->X()(all,Slice(k, k+n));
@@ -79,6 +164,31 @@ void LGLms::set_J_real() {
 
     J_real_ = Function("J_real", {ode_->state_space_->X(), ode_->control_space_->U(), tf}, {g_sum});
 }
+
+
+//void LGLms::set_J_real() {
+//    MX g_sum{0.0};
+//    MX g_max{0.0};
+//    auto h = (this->tf - 0) / (N - 1);
+//    for (int k = 0; k < N; k+=n) {
+//        auto xo = ode_->state_space_->X()(all,Slice(k, k+n+1));
+//        auto o = ode_->state_space_->X()(all,Slice(k, k+n));
+//        auto ut = ode_->control_space_->U()(all,Slice(k, k+n));
+//
+//        // Defect constraints
+//        auto x_dot_ = ode_->f()({{o},{ut}});
+//        auto x_dot = MX::vertcat(x_dot_);
+//        auto F = 0.5 * h * x_dot;
+//        auto g_d = mtimes(D(Slice(1, n + 1), all), transpose(xo)) - transpose(F);
+//
+//        g_sum = g_sum + sum2(sum1(MX::abs(g_d)));
+//        g_max = mmax(MX::vertcat({g_max, mmax(MX::abs(g_d))}));
+//    }
+//    J_max_ = Function("J_max", {ode_->state_space_->X(), ode_->control_space_->U(), tf},
+//                      {g_max * N / tf}); // TODO: put it back to g_max
+//
+//    J_real_ = Function("J_real", {ode_->state_space_->X(), ode_->control_space_->U(), tf}, {g_sum});
+//}
 
 
 void LGLms::create_LGL_params(int degree) {
@@ -142,7 +252,7 @@ int LGLms::computeN(int initial_N) {
 
 void LGLms::set_J(){
    cost_->_J = J_;
-    MX params = MX::vertcat({tf, t0});
+    MX params = MX::vertcat({t0, tf});
     cost_->J_ = Function("J", { this->cost_->state_space_.X(),  this->cost_->control_space_.U(), params}, {this->cost_->_J});
 }
 

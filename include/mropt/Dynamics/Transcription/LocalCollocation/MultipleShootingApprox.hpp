@@ -24,12 +24,12 @@ namespace mropt::Dynamics {
         void set_J() override {
             MX _J = 0;
             for (int k = 0; k < N; ++k) {
-                _J = _J + integrator(cost_->l_, (tf - t0) / (double) N, this->cost_->state_space_.X()(all, k),
-                                     this->cost_->control_space_.U()(all, k));
+                _J = _J + integrator(cost_->l_, (tf - t0) / (double) N, this->ode_->state_space_->X()(all, k),
+                                     this->ode_->control_space_->U()(all, k));
             }
             cost_->_J = _J;
-            MX params = MX::vertcat({tf, t0});
-            cost_->J_ = Function("J", { this->cost_->state_space_.X(),  this->cost_->control_space_.U(), params}, {_J});
+            MX params = MX::vertcat({t0, tf});
+            cost_->J_ = Function("J", { this->ode_->state_space_->X(),  this->ode_->control_space_->U(), params}, {_J});
         }
 
         std::vector<MX> get_constraints(casadi::Opti &ocp) override {
