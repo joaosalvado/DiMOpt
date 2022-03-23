@@ -274,7 +274,7 @@ void Robot::setupQuery(Opti &ocp) {
 //  }
     // Mission Constraints
     mission_curr->set_problem(J_model, ocp);
-
+    mission_curr->resizeMission(ss->Nx());
     // Free Space
     fspace->setup(ocp);
     const auto &fspace_constraints_list

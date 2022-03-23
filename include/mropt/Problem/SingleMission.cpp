@@ -100,3 +100,9 @@ void SingleMission::addNoise(std::vector<double> & x) {
     }
   }
 }
+
+void SingleMission::resizeMission(int Nx){
+    mropt::freespace::FreeSpace::PolygonAssignment
+        pa = { 0, Nx-1, pas[0].pid};
+    this->pas[0] = pa;
+}

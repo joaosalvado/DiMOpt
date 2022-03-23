@@ -253,7 +253,7 @@ void Opencv_plotter::plot_trajectory(
     auto N = x[0][0].size();
     double dt;
     if(pol_n){
-        dt = time / ((N-1)*pol_n);
+        dt = time / ((N)*(pol_n));
     } else{
         dt = time / N;
     };

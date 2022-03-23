@@ -35,6 +35,8 @@ public:
   virtual std::list<MX> get_constraints();
   MX get_cost();
 
+  void resizeMission(int Nx);
+
   void set_problem(MX &J_model, Opti &ocp);
 
   void compute_polygon_assignments();

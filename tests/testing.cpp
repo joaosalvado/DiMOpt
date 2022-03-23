@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
              }};
     mropt::freespace::FreeSpace::init_cfree(polygons);
     // 1 - Mission
-    int N = 39;
+    int N = 52;
     double T = 25;
 
     // 1.1) Dubins
@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
 //    auto robot_d = builder_ddquat_car.getDistributedRobot();
 
 // LGL Dubins
-    int n = 2;
+    int n = 5;
     mropt::Problem::BuilderRobot_LGL_Dubins builder_lgl_dubins_car(L[r], n);
     auto params = mropt::Problem::Robot::Params{0.0, T, N};
     builder_lgl_dubins_car.make_robot(r, params);
