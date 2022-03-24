@@ -7,7 +7,6 @@
 
 #include <casadi/casadi.hpp>
 
-#include <casadi/casadi.hpp>
 #include "mropt/Dynamics/Transcription.hpp"
 #include "mropt/Dynamics/OdeApprox.hpp"
 
@@ -32,7 +31,7 @@ namespace mropt::Dynamics {
         int n;  // Polynomial degree
         MX J_;
 
-        explicit LGLms(const std::shared_ptr<OdeApprox> &ode_approx,
+         LGLms(const std::shared_ptr<OdeApprox> &ode_approx,
                        const std::shared_ptr<mropt::cost::Cost> &cost, int degree)
                 : Transcription(ode_approx, cost) {
             this->n = degree;

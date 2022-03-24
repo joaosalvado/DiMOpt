@@ -117,19 +117,21 @@ std::vector<MX> LGLms::get_constraints(casadi::Opti &ocp) {
 
         // Cost
         MX utt;
-        if (k == N -n) {
-            utt = MX::horzcat(
-                    {
-                ode_->control_space_->U()(all,Slice(k, k+n)),
-                MX::zeros(nu, 1)
-                    });
-        } else {
-            utt = ode_->control_space_->U()(all,Slice(k, k+n+1));
-        }
+//        if (k == N -n) {
+//            utt = MX::horzcat(
+//                    {
+//                ode_->control_space_->U()(all,Slice(k, k+n)),
+//                MX::zeros(nu, 1)
+//                    });
+//        } else {
+//            utt = ode_->control_space_->U()(all,Slice(k, k+n+1));
+//        }
 
-        auto l_k_ = this->cost_->l_({{xo}, {utt}});
+        utt =  ode_->control_space_->U()(all,Slice(k, k+n));
+
+        auto l_k_ = this->cost_->l_({{o}, {utt}});
         auto l_k = MX::vertcat(l_k_);
-        J_ += 0.5 * h * mtimes(l_k, w); // quadrature
+        J_ += 0.5 * h * mtimes(l_k, w(Slice(0,n))); // quadrature
     }
 
 //    J_ = 0;
@@ -164,32 +166,6 @@ void LGLms::set_J_real() {
 
     J_real_ = Function("J_real", {ode_->state_space_->X(), ode_->control_space_->U(), tf}, {g_sum});
 }
-
-
-//void LGLms::set_J_real() {
-//    MX g_sum{0.0};
-//    MX g_max{0.0};
-//    auto h = (this->tf - 0) / (N - 1);
-//    for (int k = 0; k < N; k+=n) {
-//        auto xo = ode_->state_space_->X()(all,Slice(k, k+n+1));
-//        auto o = ode_->state_space_->X()(all,Slice(k, k+n));
-//        auto ut = ode_->control_space_->U()(all,Slice(k, k+n));
-//
-//        // Defect constraints
-//        auto x_dot_ = ode_->f()({{o},{ut}});
-//        auto x_dot = MX::vertcat(x_dot_);
-//        auto F = 0.5 * h * x_dot;
-//        auto g_d = mtimes(D(Slice(1, n + 1), all), transpose(xo)) - transpose(F);
-//
-//        g_sum = g_sum + sum2(sum1(MX::abs(g_d)));
-//        g_max = mmax(MX::vertcat({g_max, mmax(MX::abs(g_d))}));
-//    }
-//    J_max_ = Function("J_max", {ode_->state_space_->X(), ode_->control_space_->U(), tf},
-//                      {g_max * N / tf}); // TODO: put it back to g_max
-//
-//    J_real_ = Function("J_real", {ode_->state_space_->X(), ode_->control_space_->U(), tf}, {g_sum});
-//}
-
 
 void LGLms::create_LGL_params(int degree) {
     if (degree == 1) {
