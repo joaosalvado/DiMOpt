@@ -40,7 +40,7 @@ namespace mropt::Dynamics {
 
 
         std::vector<MX> get_constraints(casadi::Opti& ocp) override;
-        void set_J_real() override;
+        void set_J_real(casadi::Opti &ocp) override;
         void set_J() override;
 
         MX getStates() { return W; };

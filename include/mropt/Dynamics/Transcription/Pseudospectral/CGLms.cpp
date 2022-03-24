@@ -15,9 +15,11 @@ std::vector<MX> CGLms::get_constraints(casadi::Opti &ocp) {
     J_ = 0;
     int nu = ode_->control_space_->U().size1();
 
+    int i=0;
     for (int k = 0; k < N; k+=n) {
-        auto xo = ode_->state_space_->X()(all,Slice(k, k+n+1));
+        auto xend = W(all, i++);
         auto o = ode_->state_space_->X()(all,Slice(k, k+n));
+        auto xo = MX::horzcat({o, xend});
         auto ut = ode_->control_space_->U()(all,Slice(k, k+n));
 
         // Defect constraints
@@ -33,46 +35,34 @@ std::vector<MX> CGLms::get_constraints(casadi::Opti &ocp) {
         }
 
         // Shooting gap
-//        auto g_s = this->ode_->state_space_->X()(all, k + 1) - o(all, n - 1);
-//
+        auto g_s = this->ode_->state_space_->X()(all, k + n) - xend;
+        ocp.subject_to(g_s == 0);
+//        g.push_back(MX::vertcat({MX::vec(g_d),g_s}));
 //        g.push_back(g_s);
         g.push_back(MX::vec(g_d));
 
+
+
         // Cost
-        MX utt;
-//        if (k == N -n) {
-//            utt = MX::horzcat(
-//                    {
-//                ode_->control_space_->U()(all,Slice(k, k+n)),
-//                MX::zeros(nu, 1)
-//                    });
-//        } else {
-//            utt = ode_->control_space_->U()(all,Slice(k, k+n+1));
-//        }
-
-        utt =  ode_->control_space_->U()(all,Slice(k, k+n));
-
-        auto l_k_ = this->cost_->l_({{o}, {utt}});
+        auto l_k_ = this->cost_->l_({{o}, {ut}});
         auto l_k = MX::vertcat(l_k_);
         J_ += 0.5 * h * mtimes(l_k, w(Slice(0,n))); // quadrature
     }
 
-//    J_ = 0;
-//    for (int k = 0; k < N; ++k) {
-//        J_ += integrator(this->cost_->l_, (tf - t0) / (double) N,
-//                           ode_->state_space_->X()(all, k),
-//                           ode_->control_space_->U()(all, k));
-//    }
+
     return g;
 }
 
-void CGLms::set_J_real() {
+void CGLms::set_J_real(casadi::Opti &ocp) {
     MX g_sum{0.0};
     MX g_max{0.0};
     auto h = (this->tf - 0) / (N);
+    int nx = ode_->state_space_->X().size1();
     for (int k = 0; k < N; k+=n) {
-        auto xo = ode_->state_space_->X()(all,Slice(k, k+n+1));
+        auto xend = ocp.variable(nx, 1);
+        this->W = MX::horzcat({this->W, xend});
         auto o = ode_->state_space_->X()(all,Slice(k, k+n));
+        auto xo = MX::horzcat({o, xend});
         auto ut = ode_->control_space_->U()(all,Slice(k, k+n));
 
         // Defect constraints
@@ -81,6 +71,12 @@ void CGLms::set_J_real() {
         auto F = 0.5 * h * x_dot;
         auto g_d = mtimes(D(Slice(1, n + 1), all), transpose(xo)) - transpose(F);
 
+        // Shooting gap
+        auto g_s = this->ode_->state_space_->X()(all, k + n) - xend;
+
+//        g_sum = g_sum + sum2(sum1(MX::abs(g_d))) + sum2(sum1(MX::abs(g_s)));
+//        g_max = mmax(MX::vertcat({g_max, mmax(MX::abs(g_d))}));
+//        g_max = mmax(MX::vertcat({g_max, mmax(MX::abs(g_s))}));
         g_sum = g_sum + sum2(sum1(MX::abs(g_d)));
         g_max = mmax(MX::vertcat({g_max, mmax(MX::abs(g_d))}));
     }

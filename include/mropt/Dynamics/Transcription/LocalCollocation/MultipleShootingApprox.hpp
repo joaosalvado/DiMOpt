@@ -49,7 +49,7 @@ namespace mropt::Dynamics {
             return constraints;
         }
 
-        void set_J_real() override {
+        void set_J_real(casadi::Opti &ocp) override {
             MX g_sum{0.0};
             MX g_max{0.0};
             for (int k = 0; k < N; ++k) {

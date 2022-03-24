@@ -140,7 +140,7 @@ int main(int argc, char **argv) {
 //    builder_lgl_dubins_car.make_robot(r, params);
 //    auto robot_d = builder_lgl_dubins_car.getDistributedRobot();
 // CGL Dubins
-    int n = 2;
+    int n = 3;
     mropt::Problem::BuilderRobot_CGL_Dubins builder_cgl_dubins_car(L[r], n);
     auto params = mropt::Problem::Robot::Params{0.0, T, N};
     builder_cgl_dubins_car.make_robot(r, params);

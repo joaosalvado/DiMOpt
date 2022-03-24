@@ -78,7 +78,7 @@ std::vector<MX> LGRms::get_constraints(casadi::Opti &ocp) {
     return g;
 }
 
-void LGRms::set_J_real() {
+void LGRms::set_J_real(casadi::Opti &ocp) {
     MX g_sum{0.0};
     MX g_max{0.0};
     auto h = (this->tf - 0) / (N-1);

@@ -143,7 +143,7 @@ std::vector<MX> LGLms::get_constraints(casadi::Opti &ocp) {
     return g;
 }
 
-void LGLms::set_J_real() {
+void LGLms::set_J_real(casadi::Opti &ocp) {
     MX g_sum{0.0};
     MX g_max{0.0};
     auto h = (this->tf - 0) / (N);

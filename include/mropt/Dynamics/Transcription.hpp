@@ -58,7 +58,7 @@ private:
     ocp.set_value(t0, t0_);
     ocp.set_value(tf, tf_);
     ode_approx_->setup(ocp, X0, U0);
-    set_J_real();
+    set_J_real(ocp);
   }
 
   casadi::DM J_real(const casadi::DM &x_r, const casadi::DM &u_r, const casadi::DM &p) {
@@ -95,7 +95,7 @@ private:
     ode_approx_->convexify(ocp, x0, u0);
   }
 
-  virtual void set_J_real() = 0;
+  virtual void set_J_real(casadi::Opti &ocp) = 0;
 
   virtual void set_J() = 0;
 
