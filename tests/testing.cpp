@@ -134,17 +134,17 @@ int main(int argc, char **argv) {
 //    auto robot_d = builder_ddquat_car.getDistributedRobot();
 
 // LGL Dubins
-//    int n = 3;
-//    mropt::Problem::BuilderRobot_LGL_Dubins builder_lgl_dubins_car(L[r], n);
-//    auto params = mropt::Problem::Robot::Params{0.0, T, N};
-//    builder_lgl_dubins_car.make_robot(r, params);
-//    auto robot_d = builder_lgl_dubins_car.getDistributedRobot();
-// CGL Dubins
     int n = 3;
+    mropt::Problem::BuilderRobot_LGL_Dubins builder_lgl_dubins_car(L[r], n);
+    auto params = mropt::Problem::Robot::Params{0.0, T, N};
+    builder_lgl_dubins_car.make_robot(r, params);
+    auto robot_d = builder_lgl_dubins_car.getDistributedRobot();
+// CGL Dubins
+/*    int n = 3;
     mropt::Problem::BuilderRobot_CGL_Dubins builder_cgl_dubins_car(L[r], n);
     auto params = mropt::Problem::Robot::Params{0.0, T, N};
     builder_cgl_dubins_car.make_robot(r, params);
-    auto robot_d = builder_cgl_dubins_car.getDistributedRobot();
+    auto robot_d = builder_cgl_dubins_car.getDistributedRobot();*/
 // LGR Dubins
 //    int n = 2;
 //    mropt::Problem::BuilderRobot_LGR_Dubins builder_lgr_dubins_car(L[r], n);
